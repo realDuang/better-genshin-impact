@@ -284,6 +284,7 @@ public partial class PathExecutor
                 }
                 catch (RetryException retryException)
                 {
+                    PathPositionRecovery.ThrowIfRetryExhausted(retryException, i + 1, RetryTimes);
                     StartSkipOtherOperations();
                     Logger.LogWarning(retryException.Message);
                 }
@@ -739,7 +740,7 @@ public partial class PathExecutor
         Point2f position;
         using (var screen = CaptureToRectArea())
         {
-            position = await GetPosition(screen, waypoint);
+            position = await GetPosition(screen, waypoint, requireNearTarget: false);
         }
         var targetOrientation = Navigation.GetTargetOrientation(waypoint, position);
         Logger.LogDebug("朝向点，位置({x2},{y2})", $"{waypoint.GameX:F1}", $"{waypoint.GameY:F1}");
@@ -751,6 +752,7 @@ public partial class PathExecutor
 
     public async Task MoveTo(WaypointForTrack waypoint)
     {
+        StopMovementForPositionRecovery();
         // 切人
         await SwitchAvatar(PartyConfig.MainAvatarIndex);
         // 切人完成时刻：切人后有约1秒CD，期间无法切换到其他角色（用于生存位）
@@ -762,6 +764,7 @@ public partial class PathExecutor
         {
             (position, additionalTimeInMs) = await GetPositionAndTime(initialScreen, waypoint);
         }
+        position = await EnsurePositionForMovement(position, waypoint);
         var targetOrientation = Navigation.GetTargetOrientation(waypoint, position);
         Logger.LogDebug("粗略接近途经点，位置({x2},{y2})", $"{waypoint.GameX:F1}", $"{waypoint.GameY:F1}");
         await WaitUntilRotatedTo(targetOrientation, 5);
@@ -776,17 +779,10 @@ public partial class PathExecutor
         DateTime beyondAngleStartTime = DateTime.MinValue;
         var hurryOnState = new HurryOnState();
 
-        // 按下w，一直走
-        Simulation.SendInput.SimulateAction(GIActions.MoveForward, KeyType.KeyDown);
         // 赶路帧间隔：始终使用配置值（5-150 钳制），不依赖是否配置赶路角色（空选也可用）
         var hurryFrameInterval = Math.Clamp(PartyConfig.HurryOnFrameInterval, 5, 150);
         while (!ct.IsCancellationRequested)
         {
-            if (!Simulation.IsKeyDown(GIActions.MoveForward.ToActionKey().ToVK()))
-            {
-                Simulation.SendInput.SimulateAction(GIActions.MoveForward, KeyType.KeyDown);
-            }
-
             num++;
             if ((DateTime.UtcNow - moveToStartTime).TotalSeconds > 240)
             {
@@ -799,26 +795,19 @@ public partial class PathExecutor
             EndJudgment(screen);
 
             // position = await GetPosition(screen, waypoint);
-             (position, additionalTimeInMs) = await GetPositionAndTime(screen, waypoint);
-             if (additionalTimeInMs>0)
-             {
-                 if (!Simulation.IsKeyDown(GIActions.MoveForward.ToActionKey().ToVK()))
-                 {
-                     Simulation.SendInput.SimulateAction(GIActions.MoveForward, KeyType.KeyDown);
-                 }
-
-                 additionalTimeInMs = additionalTimeInMs + 1000;//当做起步补偿
-             }
+            (position, additionalTimeInMs) = await GetPositionAndTime(screen, waypoint);
             var distance = Navigation.GetDistance(waypoint, position);
             Debug.WriteLine($"接近目标点中，距离为{distance}");
-            if (distance < 4)
+            if (PathPositionRecovery.IsValidPosition(position) && distance < 4)
             {
                 Logger.LogDebug("到达路径点附近");
                 break;
             }
 
-            if (distance > 500)
+            if (!PathPositionRecovery.CanMove(position, waypoint.X, waypoint.Y))
             {
+                StopMovementForPositionRecovery();
+                fastMode = false;
                 if (pathExecutorSuspend.CheckAndResetSuspendPoint())
                 {
                     throw new RetryNoCountException("可能暂停导致路径过远，重试一次此路线！");
@@ -828,14 +817,14 @@ public partial class PathExecutor
                     distanceTooFarRetryCount++;
                     if (distanceTooFarRetryCount > 50)
                     {
-                        if (position == new Point2f())
+                        if (!PathPositionRecovery.IsValidPosition(position))
                         {
-                            throw new HandledException("重试多次后，当前点位无法被识别，放弃此路径！");
+                            throw new PathPositionUnavailableException("重试多次后，当前点位无法被识别，重试此路径！");
                         }
                         else
                         {
                             Logger.LogWarning($"距离过远（{position.X},{position.Y}）->（{waypoint.X},{waypoint.Y}）={distance}，重试多次后仍然失败，放弃此路径点！");
-                            throw new HandledException("目标距离过远，可能是当前点位无法识别，放弃此路径！");
+                            throw new PathPositionUnavailableException("目标距离过远，可能是当前点位无法识别，重试此路径！");
                         }
                     }
                     else
@@ -853,6 +842,12 @@ public partial class PathExecutor
                             Navigation.SetPrevPosition(prevNotTooFarPosition.X, prevNotTooFarPosition.Y);
                             // 淡入淡出特效
                             await Delay(500, ct);
+                            using var recoveryScreen = CaptureToRectArea();
+                            EndJudgment(recoveryScreen);
+                            var recovered = Navigation.GetPositionStable(recoveryScreen, waypoint.MapName, waypoint.MapMatchMethod);
+                            if (PathPositionRecovery.CanMove(recovered, waypoint.X, waypoint.Y))
+                                prevNotTooFarPosition = recovered;
+                            Navigation.SetPrevPosition(prevNotTooFarPosition.X, prevNotTooFarPosition.Y);
                         }
                         await Delay(50, ct);
                         continue;
@@ -862,6 +857,12 @@ public partial class PathExecutor
             {
                 prevNotTooFarPosition = position;
             }
+
+            // Only a current, plausible position may authorize forward movement.
+            if (!Simulation.IsKeyDown(GIActions.MoveForward.ToActionKey().ToVK()))
+                Simulation.SendInput.SimulateAction(GIActions.MoveForward, KeyType.KeyDown);
+            if (additionalTimeInMs > 0)
+                additionalTimeInMs += 1000;
 
             // 非攀爬状态下，检测是否卡死（脱困触发器）
             if (waypoint.MoveMode != MoveModeEnum.Climb.Code)
@@ -1136,7 +1137,7 @@ public partial class PathExecutor
             Simulation.SendInput.Mouse.MiddleButtonClick();
             await Delay(300, ct);
             using var screen = CaptureToRectArea();
-            var position = await GetPosition(screen, waypoint);
+            var position = await GetPosition(screen, waypoint, requireNearTarget: false);
             var targetOrientation = Navigation.GetTargetOrientation(waypoint, position);
             await WaitUntilRotatedTo(targetOrientation, 10);
             var handler = ActionFactory.GetBeforeHandler(waypoint.Action);
@@ -1262,9 +1263,29 @@ public partial class PathExecutor
         
     }
 
-    private async Task<Point2f> GetPosition(ImageRegion imageRegion, WaypointForTrack waypoint)
+    private async Task<Point2f> GetPosition(ImageRegion imageRegion, WaypointForTrack waypoint, bool requireNearTarget = true)
     {
-        return (await GetPositionAndTime(imageRegion, waypoint)).point;
+        var position = (await GetPositionAndTime(imageRegion, waypoint)).point;
+        return await EnsurePositionForMovement(position, waypoint, requireNearTarget);
+    }
+
+    private static void StopMovementForPositionRecovery()
+    {
+        Simulation.SendInput.SimulateAction(GIActions.MoveForward, KeyType.KeyUp);
+        Simulation.SendInput.SimulateAction(GIActions.SprintMouse, KeyType.KeyUp);
+    }
+
+    private Task<Point2f> EnsurePositionForMovement(Point2f position, WaypointForTrack waypoint, bool requireNearTarget = true)
+    {
+        return PathPositionRecovery.AcquireAsync(position, waypoint.X, waypoint.Y,
+            async token =>
+            {
+                Logger.LogInformation("Recovering small-map position before movement: {Map}", waypoint.MapName);
+                await Delay(300, token);
+                using var capture = CaptureToRectArea();
+                EndJudgment(capture);
+                return Navigation.GetPositionStable(capture, waypoint.MapName, waypoint.MapMatchMethod);
+            }, StopMovementForPositionRecovery, ct, requireNearTarget);
     }
     //
     public bool GetPositionAndTimeSuspendFlag = false;
@@ -1272,6 +1293,8 @@ public partial class PathExecutor
     {
         
         var position = Navigation.GetPosition(imageRegion, waypoint.MapName, waypoint.MapMatchMethod);
+        if (!PathPositionRecovery.CanMove(position, waypoint.X, waypoint.Y))
+            StopMovementForPositionRecovery();
         int time = 0;
         if (position == new Point2f())
         {
@@ -1332,7 +1355,7 @@ public partial class PathExecutor
            // }
 
         }
-        else
+        else if (PathPositionRecovery.IsValidPosition(position))
         {
             prePosition = position;
             preTime = DateTime.Now;

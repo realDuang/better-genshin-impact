@@ -21,6 +21,11 @@ public class NavigationInstance
     
     public void SetPrevPosition(float x, float y)
     {
+        if (!PathPositionRecovery.IsValidPosition(new Point2f(x, y)))
+        {
+            Reset();
+            return;
+        }
         (_prevX, _prevY) = (x, y);
     }
 
@@ -29,7 +34,7 @@ public class NavigationInstance
         using var colorMat = new Mat(imageRegion.SrcMat, MapAssets.Get(imageRegion).MimiMapRect);
         var captureTime = DateTime.UtcNow;
         var p = MapManager.GetMap(mapName, mapMatchMethod).GetMiniMapPosition(colorMat, _prevX, _prevY);
-        if (p != default && captureTime > _captureTime)
+        if (PathPositionRecovery.IsValidPosition(p) && captureTime > _captureTime)
         {
             (_prevX, _prevY) = (p.X, p.Y);
             _captureTime = captureTime;
@@ -58,12 +63,12 @@ public class NavigationInstance
                 ?? sceneMap.GetMiniMapPosition(colorMat, _prevX, _prevY);
 
         // 如果局部匹配失败或者点位跳跃过大，再尝试全地图匹配
-        if (p == default || (_prevX > 0 && _prevY >0 && p.DistanceTo(new Point2f(_prevX,_prevY)) > 150))
+        if (!PathPositionRecovery.IsValidPosition(p) || (_prevX > 0 && _prevY >0 && p.DistanceTo(new Point2f(_prevX,_prevY)) > 150))
         {
             Reset();
             p = MapManager.GetMap(mapName, mapMatchMethod).GetMiniMapPosition(colorMat, _prevX, _prevY);
         }
-        if (p != default && captureTime > _captureTime)
+        if (PathPositionRecovery.IsValidPosition(p) && captureTime > _captureTime)
         {
             (_prevX, _prevY) = (p.X, p.Y);
             _captureTime = captureTime;
