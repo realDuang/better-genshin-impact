@@ -941,7 +941,8 @@ public class TpTask
         }
 
         // 面板始终未出现：点空，或点到未激活点/标点且未弹出可交互面板。
-        throw new TeleportPanelNotOpenedException("点击传送点后未出现交互面板，可能是传送点未激活");
+        TaskTriggerDispatcher.Instance().TakeScreenshot();
+        throw new TeleportPanelNotOpenedException("点击传送点后未出现交互面板");
     }
 
     private async Task<bool> WaitForTeleportPanelAndConfirm(GiTpPosition? targetTp)
@@ -1447,12 +1448,14 @@ public class TpTask
                 moveState = GetMoveMapState(newCenterPoint, x, y, currentZoomLevel);
                 exceptionTimes = 0;
             }
-            catch (MapPositionNotRecognizedException)
+            catch (MapPositionNotRecognizedException error)
             {
                 exceptionTimes++;
                 if (exceptionTimes > 5)
                 {
-                    throw new Exception("多次中心点识别失败或异常，惯性推算失效，重新传送");
+                    Logger.LogWarning("大地图定位失败：{Reason}；预测中心({X}, {Y})", error.Message, predictedPoint.X, predictedPoint.Y);
+                    TaskTriggerDispatcher.Instance().TakeScreenshot();
+                    throw new Exception("多次中心点识别失败或异常，惯性推算失效，重新传送", error);
                 }
 
                 moveState = GetMoveMapState(predictedPoint, x, y, currentZoomLevel);
