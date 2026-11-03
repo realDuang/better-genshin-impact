@@ -42,6 +42,8 @@ public class Det(BgiOnnxModel model, OcrVersionConfig config, BgiOnnxFactory bgi
 
     ~Det()
     {
+        // The session field initializer may have failed during construction.
+        if (_session is null) return;
         lock (_session)
         {
             _session.Dispose();

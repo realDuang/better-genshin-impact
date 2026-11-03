@@ -35,6 +35,8 @@ public class Rec(
 
     ~Rec()
     {
+        // The session field initializer may have failed during construction.
+        if (_session is null) return;
         lock (_session)
         {
             _session.Dispose();

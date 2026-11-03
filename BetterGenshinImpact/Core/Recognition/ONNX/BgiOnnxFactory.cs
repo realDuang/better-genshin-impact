@@ -323,13 +323,10 @@ public class BgiOnnxFactory
         ProviderType[]? providerTypes = null;
         if (CpuOcr && ocr) providerTypes = [ProviderType.Cpu];
 
-        if (!EnableCache)
-            return new InferenceSession(model.ModalPath, CreateSessionOptions(model, false, providerTypes));
-
-        var cached = GetCached(model, providerTypes);
-        return cached == null
-            ? new InferenceSession(model.ModalPath, CreateSessionOptions(model, true, providerTypes))
-            : new InferenceSession(cached, CreateSessionOptions(model, false, providerTypes));
+        var cached = EnableCache ? GetCached(model, providerTypes) : null;
+        // ONNX Runtime 1.21 passes a raw handle; keep its owner alive until native initialization returns.
+        using var sessionOptions = CreateSessionOptions(model, EnableCache && cached == null, providerTypes);
+        return new InferenceSession(cached ?? model.ModalPath, sessionOptions);
     }
 
     /// <summary>
