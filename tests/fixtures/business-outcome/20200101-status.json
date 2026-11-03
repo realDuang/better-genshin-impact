@@ -1,0 +1,28 @@
+{
+  "RunId": "fixture-warning-01",
+  "Started": "2020-01-01T08:00:03.0122452+08:00",
+  "Profile": "Fixture-Daily",
+  "Phase": "finished",
+  "Result": "exited",
+  "ChildSession": 21,
+  "BetterGiPid": 1201,
+  "ShutdownEligible": false,
+  "ExitCode": 0,
+  "Detail": "",
+  "AttemptCount": 1,
+  "Attempts": [
+    {
+      "Number": 1,
+      "Started": "2020-01-01T08:00:03.6862335+08:00",
+      "Updated": "2020-01-01T08:11:03.0796630+08:00",
+      "ChildSession": 21,
+      "BetterGiPid": 1201,
+      "ExitCode": 0,
+      "Result": "exited",
+      "Detail": "",
+      "CleanupSucceeded": true,
+      "Retryable": true
+    }
+  ],
+  "Updated": "2020-01-01T08:11:03.1144755+08:00"
+}

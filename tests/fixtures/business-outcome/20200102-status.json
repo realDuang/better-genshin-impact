@@ -1,0 +1,28 @@
+{
+  "RunId": "fixture-domain-failure-02",
+  "Started": "2020-01-02T08:00:02.4761864+08:00",
+  "Profile": "Fixture-Daily",
+  "Phase": "finished",
+  "Result": "exited",
+  "ChildSession": 22,
+  "BetterGiPid": 1202,
+  "ShutdownEligible": false,
+  "ExitCode": 0,
+  "Detail": "",
+  "AttemptCount": 1,
+  "Attempts": [
+    {
+      "Number": 1,
+      "Started": "2020-01-02T08:00:03.2266346+08:00",
+      "Updated": "2020-01-02T08:05:43.4127926+08:00",
+      "ChildSession": 22,
+      "BetterGiPid": 1202,
+      "ExitCode": 0,
+      "Result": "exited",
+      "Detail": "",
+      "CleanupSucceeded": true,
+      "Retryable": true
+    }
+  ],
+  "Updated": "2020-01-02T08:05:43.4447908+08:00"
+}

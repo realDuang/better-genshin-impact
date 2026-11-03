@@ -1,0 +1,516 @@
+[08:01:53.601] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.ViewModel.Pages.OneDragonFlowViewModel
+一条龙任务执行: 1/5
+
+[08:01:56.422] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+邮件："全部领取"
+
+[08:02:00.619] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.TaskRunner
+→ "任务结束"
+
+[08:02:00.620] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.ViewModel.Pages.OneDragonFlowViewModel
+一条龙任务执行: 2/5
+
+[08:02:00.628] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+→ "前往合成台" 开始
+
+[08:02:30.576] [WRN] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+传送异常多次中心点识别失败或异常，惯性推算失效，重新传送
+
+[08:02:33.403] [WRN] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+切换区域失败："枫丹"，OCR候选："地图 / X / 每日委托：至冬 / ·. / 游逸旅闻：挪德卡莱 / 蒙德 / 璃月 / 须弥 / 纳塔 / 莱 / 至冬 / 层岩巨渊·地下矿区"
+
+[08:02:33.405] [WRN] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+传送异常切换区域[枫丹]失败
+
+[08:02:36.455] [WRN] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+切换区域失败："枫丹"，OCR候选："地图 / X / 每日委托：至冬 / ·. / 游逸旅闻：挪德卡莱 / 蒙德 / 璃月 / 须弥 / 纳塔 / 莱 / 至冬 / 层岩巨渊·地下矿区"
+
+[08:02:36.457] [WRN] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+传送异常切换区域[枫丹]失败
+
+[08:02:36.763] [ERR] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+前往合成台领取奖励执行异常：传送失败
+
+[08:02:37.763] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+重试前往合成台领取奖励
+
+[08:02:40.898] [WRN] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+切换区域失败："枫丹"，OCR候选："地图 / X / 每日委托：至冬 / ·. / 游逸旅闻：挪德卡莱 / 蒙德 / 璃月 / 须弥 / 纳塔 / 莱 / 至冬 / 层岩巨渊·地下矿区"
+
+[08:02:40.898] [WRN] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+传送异常切换区域[枫丹]失败
+
+[08:02:43.702] [WRN] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+切换区域失败："枫丹"，OCR候选："地图 / X / 每日委托：至冬 / ·. / 游逸旅闻：挪德卡莱 / 蒙德 / 璃月 / 须弥 / 纳塔 / 莱 / 至冬 / 层岩巨渊·地下矿区"
+
+[08:02:43.703] [WRN] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+传送异常切换区域[枫丹]失败
+
+[08:02:46.613] [WRN] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+切换区域失败："枫丹"，OCR候选："地图 / X / 每日委托：至冬 / ·. / 游逸旅闻：挪德卡莱 / 蒙德 / 璃月 / 须弥 / 纳塔 / 莱 / 至冬 / 层岩巨渊·地下矿区"
+
+[08:02:46.614] [WRN] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+传送异常切换区域[枫丹]失败
+
+[08:02:46.915] [ERR] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+前往合成台领取奖励执行异常：传送失败
+
+[08:02:46.917] [ERR] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+合成树脂执行异常：传送失败
+
+[08:02:47.924] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.TaskRunner
+→ "任务结束"
+
+[08:02:47.938] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.ViewModel.Pages.OneDragonFlowViewModel
+一条龙任务执行: 3/5
+
+[08:02:47.991] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境任务：执行
+
+[08:02:48.039] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+→ "自动秘境，" 用尽所有浓缩树脂和原粹树脂后结束
+
+[08:02:55.308] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：传送到秘境"根据提升指南选择秘境"
+
+[08:03:08.290] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：至冬秘境使用文本OCR选择交互项 "荒坠的圣迹"
+
+[08:03:17.556] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：点击 "单人挑战"
+
+[08:03:18.875] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：进入 "队伍选择界面"
+
+[08:03:37.431] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：点击 "地脉异常"
+
+[08:03:38.626] [WRN] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+未完整匹配到当前队伍，使用匹配度最高的队伍："万能战斗策略（萌新推荐）"
+
+[08:03:38.828] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："1. 走到钥匙处启动"
+
+[08:03:40.045] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："2. 执行战斗策略"
+
+[08:04:55.120] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："3. 寻找石化古树"
+
+[08:05:03.536] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："4. 走到石化古树处"
+
+[08:05:11.975] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："5. 领取奖励"
+
+[08:05:15.251] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+"自动秘境"：使用 "浓缩树脂", 数量：1
+
+[08:05:17.547] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：开始奖励识别
+
+[08:05:21.087] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：本轮奖励识别结果 "好感经验 x60, 摩拉 x10125, 「坚忍」的指引 x6, 「坚忍」的教导 x6"
+
+[08:05:25.985] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：点击 "地脉异常"
+
+[08:05:27.119] [WRN] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+未完整匹配到当前队伍，使用匹配度最高的队伍："万能战斗策略（萌新推荐）"
+
+[08:05:27.320] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："1. 走到钥匙处启动"
+
+[08:05:27.642] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："2. 执行战斗策略"
+
+[08:06:19.172] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："3. 寻找石化古树"
+
+[08:06:25.870] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："4. 走到石化古树处"
+
+[08:06:32.744] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："5. 领取奖励"
+
+[08:06:35.896] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+"自动秘境"：使用 "浓缩树脂", 数量：1
+
+[08:06:38.191] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：开始奖励识别
+
+[08:06:41.291] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：本轮奖励识别结果 "好感经验 x60, 摩拉 x10125, 「坚忍」的指引 x7, 「坚忍」的教导 x6"
+
+[08:06:46.121] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：点击 "地脉异常"
+
+[08:06:47.319] [WRN] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+未完整匹配到当前队伍，使用匹配度最高的队伍："万能战斗策略（萌新推荐）"
+
+[08:06:47.519] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："1. 走到钥匙处启动"
+
+[08:06:47.828] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："2. 执行战斗策略"
+
+[08:07:59.263] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："3. 寻找石化古树"
+
+[08:08:07.382] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："4. 走到石化古树处"
+
+[08:08:14.982] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："5. 领取奖励"
+
+[08:08:18.123] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+"自动秘境"：使用 "浓缩树脂", 数量：1
+
+[08:08:20.407] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：开始奖励识别
+
+[08:08:23.675] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：本轮奖励识别结果 "好感经验 x60, 摩拉 x10125, 「坚忍」的哲学 x2, 「坚忍」的指引 x4, 「坚忍」的教导 x7"
+
+[08:08:28.590] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：点击 "地脉异常"
+
+[08:08:29.775] [WRN] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+未完整匹配到当前队伍，使用匹配度最高的队伍："万能战斗策略（萌新推荐）"
+
+[08:08:29.975] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："1. 走到钥匙处启动"
+
+[08:08:30.304] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："2. 执行战斗策略"
+
+[08:09:40.813] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："3. 寻找石化古树"
+
+[08:09:46.446] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："4. 走到石化古树处"
+
+[08:09:53.397] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："5. 领取奖励"
+
+[08:09:56.469] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+"自动秘境"：使用 "原粹树脂", 数量：20
+
+[08:09:58.757] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：开始奖励识别
+
+[08:10:02.042] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：本轮奖励识别结果 "好感经验 x20, 摩拉 x3375, 「坚忍」的哲学 x1, 「坚忍」的指引 x1, 「坚忍」的教导 x3"
+
+[08:10:06.726] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：点击 "地脉异常"
+
+[08:10:07.919] [WRN] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+未完整匹配到当前队伍，使用匹配度最高的队伍："万能战斗策略（萌新推荐）"
+
+[08:10:08.119] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："1. 走到钥匙处启动"
+
+[08:10:08.433] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："2. 执行战斗策略"
+
+[08:10:58.895] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："3. 寻找石化古树"
+
+[08:11:04.201] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："4. 走到石化古树处"
+
+[08:11:11.690] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："5. 领取奖励"
+
+[08:11:14.722] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+"自动秘境"：使用 "原粹树脂", 数量：20
+
+[08:11:17.008] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：开始奖励识别
+
+[08:11:20.170] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：本轮奖励识别结果 "好感经验 x20, 摩拉 x3375, 「坚忍」的哲学 x1, 「坚忍」的指引 x1, 「坚忍」的教导 x2"
+
+[08:11:25.023] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：点击 "地脉异常"
+
+[08:11:26.207] [WRN] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+未完整匹配到当前队伍，使用匹配度最高的队伍："万能战斗策略（萌新推荐）"
+
+[08:11:26.408] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："1. 走到钥匙处启动"
+
+[08:11:26.727] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："2. 执行战斗策略"
+
+[08:12:08.957] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："3. 寻找石化古树"
+
+[08:12:13.467] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："4. 走到石化古树处"
+
+[08:12:21.286] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："5. 领取奖励"
+
+[08:12:24.717] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+"自动秘境"：使用 "原粹树脂", 数量：20
+
+[08:12:27.002] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：开始奖励识别
+
+[08:12:30.338] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：本轮奖励识别结果 "好感经验 x20, 摩拉 x3375, 「坚忍」的哲学 x1, 「坚忍」的指引 x1, 「坚忍」的教导 x3"
+
+[08:12:35.075] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：点击 "地脉异常"
+
+[08:12:36.331] [WRN] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+未完整匹配到当前队伍，使用匹配度最高的队伍："万能战斗策略（萌新推荐）"
+
+[08:12:36.532] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："1. 走到钥匙处启动"
+
+[08:12:36.847] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："2. 执行战斗策略"
+
+[08:13:39.658] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："3. 寻找石化古树"
+
+[08:13:46.537] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："4. 走到石化古树处"
+
+[08:13:54.642] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："5. 领取奖励"
+
+[08:13:57.686] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+"自动秘境"：使用 "原粹树脂", 数量：20
+
+[08:14:00.008] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：开始奖励识别
+
+[08:14:03.196] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：本轮奖励识别结果 "好感经验 x20, 摩拉 x3375, 「坚忍」的指引 x2, 「坚忍」的教导 x2"
+
+[08:14:08.172] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：点击 "地脉异常"
+
+[08:14:09.322] [WRN] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+未完整匹配到当前队伍，使用匹配度最高的队伍："万能战斗策略（萌新推荐）"
+
+[08:14:09.522] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："1. 走到钥匙处启动"
+
+[08:14:09.825] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："2. 执行战斗策略"
+
+[08:15:35.599] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："3. 寻找石化古树"
+
+[08:15:42.187] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："4. 走到石化古树处"
+
+[08:15:49.847] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："5. 领取奖励"
+
+[08:15:53.030] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+"自动秘境"：使用 "原粹树脂", 数量：20
+
+[08:15:55.312] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：开始奖励识别
+
+[08:15:58.439] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：本轮奖励识别结果 "好感经验 x20, 摩拉 x3375, 「坚忍」的指引 x2, 「坚忍」的教导 x2"
+
+[08:16:03.203] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：点击 "地脉异常"
+
+[08:16:04.316] [WRN] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+未完整匹配到当前队伍，使用匹配度最高的队伍："万能战斗策略（萌新推荐）"
+
+[08:16:04.517] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："1. 走到钥匙处启动"
+
+[08:16:04.837] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："2. 执行战斗策略"
+
+[08:17:06.246] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："3. 寻找石化古树"
+
+[08:17:11.786] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："4. 走到石化古树处"
+
+[08:17:23.149] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："5. 领取奖励"
+
+[08:17:26.532] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+"自动秘境"：使用 "原粹树脂", 数量：20
+
+[08:17:28.828] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：开始奖励识别
+
+[08:17:32.171] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：本轮奖励识别结果 "好感经验 x20, 摩拉 x3375, 「坚忍」的哲学 x1, 「坚忍」的指引 x1, 「坚忍」的教导 x2"
+
+[08:17:36.911] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：点击 "地脉异常"
+
+[08:17:37.990] [WRN] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+未完整匹配到当前队伍，使用匹配度最高的队伍："万能战斗策略（萌新推荐）"
+
+[08:17:38.191] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："1. 走到钥匙处启动"
+
+[08:17:38.493] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："2. 执行战斗策略"
+
+[08:18:43.903] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："3. 寻找石化古树"
+
+[08:18:50.135] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："4. 走到石化古树处"
+
+[08:18:58.163] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："5. 领取奖励"
+
+[08:19:01.249] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+"自动秘境"：使用 "原粹树脂", 数量：20
+
+[08:19:03.534] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：开始奖励识别
+
+[08:19:06.662] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：本轮奖励识别结果 "好感经验 x20, 摩拉 x3375, 「坚忍」的指引 x2, 「坚忍」的教导 x2"
+
+[08:19:11.496] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：点击 "地脉异常"
+
+[08:19:12.635] [WRN] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+未完整匹配到当前队伍，使用匹配度最高的队伍："万能战斗策略（萌新推荐）"
+
+[08:19:12.836] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："1. 走到钥匙处启动"
+
+[08:19:13.135] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："2. 执行战斗策略"
+
+[08:20:18.460] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："3. 寻找石化古树"
+
+[08:20:24.911] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："4. 走到石化古树处"
+
+[08:20:32.537] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："5. 领取奖励"
+
+[08:20:35.649] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+"自动秘境"：使用 "原粹树脂", 数量：20
+
+[08:20:37.929] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：开始奖励识别
+
+[08:20:41.012] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：本轮奖励识别结果 "好感经验 x20, 摩拉 x3375, 「坚忍」的指引 x2, 「坚忍」的教导 x2"
+
+[08:20:45.788] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：点击 "地脉异常"
+
+[08:20:46.942] [WRN] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+未完整匹配到当前队伍，使用匹配度最高的队伍："万能战斗策略（萌新推荐）"
+
+[08:20:47.142] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："1. 走到钥匙处启动"
+
+[08:20:47.454] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："2. 执行战斗策略"
+
+[08:21:55.367] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："3. 寻找石化古树"
+
+[08:22:03.235] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："4. 走到石化古树处"
+
+[08:22:10.512] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："5. 领取奖励"
+
+[08:22:13.592] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+"自动秘境"：使用 "原粹树脂", 数量：20
+
+[08:22:15.887] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：开始奖励识别
+
+[08:22:19.130] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：本轮奖励识别结果 "好感经验 x20, 摩拉 x3375, 「坚忍」的指引 x2, 「坚忍」的教导 x2"
+
+[08:22:19.270] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+体力耗尽或者设置轮次已达标，结束自动秘境
+
+[08:22:36.102] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.TaskRunner
+→ "任务结束"
+
+[08:22:36.103] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.ViewModel.Pages.OneDragonFlowViewModel
+一条龙任务执行: 4/5
+
+[08:22:36.111] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+→ "前往冒险家协会领取奖励" 开始
+
+[08:23:31.939] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+→ "前往冒险家协会领取奖励" 结束
+
+[08:23:41.200] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.TaskRunner
+→ "任务结束"
+
+[08:23:41.200] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.ViewModel.Pages.OneDragonFlowViewModel
+一条龙任务执行: 5/5
+
+[08:23:43.881] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+领取尘歌壶奖励:"洞天名称：清琼岛"
+
+[08:23:54.387] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+领取尘歌壶奖励:"在清琼岛，调整位置"
+
+[08:23:55.300] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+领取尘歌壶奖励:"寻找阿圆"
+
+[08:24:07.283] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+领取尘歌壶奖励:"寻找阿圆成功"
+
+[08:24:07.283] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+领取尘歌壶奖励:"接近阿圆"
+
+[08:24:08.614] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+领取尘歌壶奖励:"接近阿圆成功"
+
+[08:24:15.044] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+领取尘歌壶奖励:"领取好感和宝钱"
+
+[08:24:22.294] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+领取尘歌壶奖励:"购买商店物品"
+
+[08:24:22.846] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+领取尘歌壶奖励:购买 "exp_bottle_big" 
+
+[08:24:23.714] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+领取尘歌壶奖励:"商店物品售空"
+
+[08:24:25.452] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+领取尘歌壶奖励:购买 "exp_bottle_small" 
+
+[08:24:26.268] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+领取尘歌壶奖励:"商店物品售空"
+
+[08:24:28.868] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+领取尘歌壶奖励:"购买商店物品完成"
+
+[08:24:29.911] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.Common.TaskControl
+领取尘歌壶奖励:"退出到主页"
+
+[08:24:48.632] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.TaskRunner
+→ "任务结束"
+
+[08:24:52.955] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.ViewModel.Pages.OneDragonFlowViewModel
+一条龙和配置组任务结束
+
+[08:24:56.081] [INF] [Primary:S23:P1203:T3103] BetterGenshinImpact.GameTask.TaskRunner
+→ "任务结束"
+

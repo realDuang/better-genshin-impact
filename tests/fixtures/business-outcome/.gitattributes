@@ -1,0 +1,2 @@
+# Keep native-style fixture bytes and their intentional blank record separators.
+*.log -text -whitespace

@@ -1,0 +1,36 @@
+{
+  "source": "sanitized-navigation-scenario",
+  "status": {
+    "RunId": "fixture-navigation-complete",
+    "Started": "2020-01-03T13:30:51.9468490+08:00",
+    "Profile": "Fixture-Daily",
+    "Phase": "finished",
+    "Result": "exited",
+    "ChildSession": 31,
+    "BetterGiPid": 2201,
+    "ShutdownEligible": false,
+    "ExitCode": 0,
+    "Detail": "",
+    "AttemptCount": 1,
+    "Attempts": [
+      {
+        "Number": 1,
+        "Started": "2020-01-03T13:30:52.3984219+08:00",
+        "Updated": "2020-01-03T13:37:17.9563093+08:00",
+        "ChildSession": 31,
+        "BetterGiPid": 2201,
+        "ExitCode": 0,
+        "ProcessExitCode": 0,
+        "Result": "exited",
+        "Detail": "",
+        "CleanupSucceeded": true,
+        "Retryable": true
+      }
+    ],
+    "ProcessExitCode": 0,
+    "BusinessOutcome": "needs-attention",
+    "BusinessEvidenceIssues": [],
+    "Updated": "2020-01-03T13:37:18.2023078+08:00"
+  },
+  "native_log": "[13:31:59.568] [INF] [Primary:S31:P2201:T3201] BetterGenshinImpact.ViewModel.Pages.OneDragonFlowViewModel\r\n一条龙任务执行: 1/5\r\n\r\n[13:32:02.497] [INF] [Primary:S31:P2201:T3201] BetterGenshinImpact.GameTask.Common.TaskControl\r\n邮件：\"全部领取\"\r\n\r\n[13:32:06.758] [INF] [Primary:S31:P2201:T3201] BetterGenshinImpact.GameTask.TaskRunner\r\n→ \"任务结束\"\r\n\r\n[13:32:06.760] [INF] [Primary:S31:P2201:T3201] BetterGenshinImpact.ViewModel.Pages.OneDragonFlowViewModel\r\n一条龙任务执行: 2/5\r\n\r\n[13:32:06.774] [INF] [Primary:S31:P2201:T3201] BetterGenshinImpact.GameTask.Common.TaskControl\r\n→ \"前往合成台\" 开始\r\n\r\n[13:32:25.086] [INF] [Primary:S31:P2201:T3201] BetterGenshinImpact.GameTask.Common.TaskControl\r\n无需合成浓缩树脂\r\n\r\n[13:32:27.052] [INF] [Primary:S31:P2201:T3201] BetterGenshinImpact.GameTask.Common.TaskControl\r\n→ \"前往合成台\" 结束\r\n\r\n[13:32:28.065] [INF] [Primary:S31:P2201:T3201] BetterGenshinImpact.GameTask.TaskRunner\r\n→ \"任务结束\"\r\n\r\n[13:32:28.065] [INF] [Primary:S31:P2201:T3201] BetterGenshinImpact.ViewModel.Pages.OneDragonFlowViewModel\r\n一条龙任务执行: 3/5\r\n\r\n[13:32:28.073] [INF] [Primary:S31:P2201:T3201] BetterGenshinImpact.GameTask.Common.TaskControl\r\n自动秘境任务：执行\r\n\r\n[13:32:28.105] [INF] [Primary:S31:P2201:T3201] BetterGenshinImpact.GameTask.Common.TaskControl\r\n→ \"自动秘境，\" 用尽所有浓缩树脂和原粹树脂后结束\r\n\r\n[13:32:34.952] [INF] [Primary:S31:P2201:T3201] BetterGenshinImpact.GameTask.Common.TaskControl\r\n自动秘境：传送到秘境\"根据提升指南选择秘境\"\r\n\r\n[13:32:49.861] [INF] [Primary:S31:P2201:T3201] BetterGenshinImpact.GameTask.Common.TaskControl\r\n自动秘境：至冬秘境使用文本OCR选择交互项 \"荒坠的圣迹\"\r\n\r\n[13:33:00.262] [INF] [Primary:S31:P2201:T3201] BetterGenshinImpact.GameTask.Common.TaskControl\r\n自动秘境：点击 \"单人挑战\"\r\n\r\n[13:33:01.681] [INF] [Primary:S31:P2201:T3201] BetterGenshinImpact.GameTask.Common.TaskControl\r\n自动秘境：进入 \"队伍选择界面\"\r\n\r\n[13:33:13.592] [INF] [Primary:S31:P2201:T3201] BetterGenshinImpact.GameTask.Common.TaskControl\r\n自动秘境：点击 \"开始挑战\"\r\n\r\n[13:33:19.190] [INF] [Primary:S31:P2201:T3201] BetterGenshinImpact.GameTask.Common.TaskControl\r\n自动秘境：点击 \"地脉异常\"\r\n\r\n[13:33:20.675] [INF] [Primary:S31:P2201:T3201] BetterGenshinImpact.GameTask.Common.TaskControl\r\n自动秘境：\"1. 走到钥匙处启动\"\r\n\r\n[13:33:21.895] [INF] [Primary:S31:P2201:T3201] BetterGenshinImpact.GameTask.Common.TaskControl\r\n自动秘境：\"2. 执行战斗策略\"\r\n\r\n[13:34:14.224] [INF] [Primary:S31:P2201:T3201] BetterGenshinImpact.GameTask.Common.TaskControl\r\n自动秘境：\"3. 寻找石化古树\"\r\n\r\n[13:34:21.547] [INF] [Primary:S31:P2201:T3201] BetterGenshinImpact.GameTask.Common.TaskControl\r\n自动秘境：\"4. 走到石化古树处\"\r\n\r\n[13:34:26.418] [INF] [Primary:S31:P2201:T3201] BetterGenshinImpact.GameTask.Common.TaskControl\r\n自动秘境：\"5. 领取奖励\"\r\n\r\n[13:34:28.970] [WRN] [Primary:S31:P2201:T3201] BetterGenshinImpact.GameTask.Common.TaskControl\r\n树脂不足\r\n\r\n[13:34:31.088] [INF] [Primary:S31:P2201:T3201] BetterGenshinImpact.GameTask.Common.TaskControl\r\n体力耗尽或者设置轮次已达标，结束自动秘境\r\n\r\n[13:34:49.087] [INF] [Primary:S31:P2201:T3201] BetterGenshinImpact.GameTask.TaskRunner\r\n→ \"任务结束\"\r\n\r\n[13:34:49.088] [INF] [Primary:S31:P2201:T3201] BetterGenshinImpact.ViewModel.Pages.OneDragonFlowViewModel\r\n一条龙任务执行: 4/5\r\n\r\n[13:34:49.094] [INF] [Primary:S31:P2201:T3201] BetterGenshinImpact.GameTask.Common.TaskControl\r\n→ \"前往冒险家协会领取奖励\" 开始\r\n\r\n[13:35:29.888] [INF] [Primary:S31:P2201:T3201] BetterGenshinImpact.GameTask.Common.TaskControl\r\n▶ \"领取『每日委托』奖励\" 未完成或者已领取\r\n\r\n[13:35:32.542] [INF] [Primary:S31:P2201:T3201] BetterGenshinImpact.GameTask.Common.TaskControl\r\n▶ \"探索派遣\" 未探索完成或已领取\r\n\r\n[13:35:35.494] [INF] [Primary:S31:P2201:T3201] BetterGenshinImpact.GameTask.Common.TaskControl\r\n→ \"前往冒险家协会领取奖励\" 结束\r\n\r\n[13:35:42.857] [INF] [Primary:S31:P2201:T3201] BetterGenshinImpact.GameTask.TaskRunner\r\n→ \"任务结束\"\r\n\r\n[13:35:42.857] [INF] [Primary:S31:P2201:T3201] BetterGenshinImpact.ViewModel.Pages.OneDragonFlowViewModel\r\n一条龙任务执行: 5/5\r\n\r\n[13:35:46.341] [INF] [Primary:S31:P2201:T3201] BetterGenshinImpact.GameTask.Common.TaskControl\r\n领取尘歌壶奖励:\"洞天名称：清琼岛\"\r\n\r\n[13:35:57.031] [INF] [Primary:S31:P2201:T3201] BetterGenshinImpact.GameTask.Common.TaskControl\r\n领取尘歌壶奖励:\"在清琼岛，调整位置\"\r\n\r\n[13:35:57.981] [INF] [Primary:S31:P2201:T3201] BetterGenshinImpact.GameTask.Common.TaskControl\r\n领取尘歌壶奖励:\"寻找阿圆\"\r\n\r\n[13:36:10.630] [INF] [Primary:S31:P2201:T3201] BetterGenshinImpact.GameTask.Common.TaskControl\r\n领取尘歌壶奖励:\"寻找阿圆成功\"\r\n\r\n[13:36:10.630] [INF] [Primary:S31:P2201:T3201] BetterGenshinImpact.GameTask.Common.TaskControl\r\n领取尘歌壶奖励:\"接近阿圆\"\r\n\r\n[13:36:12.024] [INF] [Primary:S31:P2201:T3201] BetterGenshinImpact.GameTask.Common.TaskControl\r\n领取尘歌壶奖励:\"接近阿圆成功\"\r\n\r\n[13:36:18.650] [INF] [Primary:S31:P2201:T3201] BetterGenshinImpact.GameTask.Common.TaskControl\r\n领取尘歌壶奖励:\"领取好感和宝钱\"\r\n\r\n[13:36:26.739] [INF] [Primary:S31:P2201:T3201] BetterGenshinImpact.GameTask.Common.TaskControl\r\n领取尘歌壶奖励:\"购买商店物品\"\r\n\r\n[13:36:27.290] [INF] [Primary:S31:P2201:T3201] BetterGenshinImpact.GameTask.Common.TaskControl\r\n领取尘歌壶奖励:购买 \"exp_bottle_big\" \r\n\r\n[13:36:28.125] [INF] [Primary:S31:P2201:T3201] BetterGenshinImpact.GameTask.Common.TaskControl\r\n领取尘歌壶奖励:\"商店物品售空\"\r\n\r\n[13:36:29.878] [INF] [Primary:S31:P2201:T3201] BetterGenshinImpact.GameTask.Common.TaskControl\r\n领取尘歌壶奖励:购买 \"exp_bottle_small\" \r\n\r\n[13:36:30.794] [INF] [Primary:S31:P2201:T3201] BetterGenshinImpact.GameTask.Common.TaskControl\r\n领取尘歌壶奖励:\"商店物品售空\"\r\n\r\n[13:36:33.419] [INF] [Primary:S31:P2201:T3201] BetterGenshinImpact.GameTask.Common.TaskControl\r\n领取尘歌壶奖励:\"购买商店物品完成\"\r\n\r\n[13:36:34.498] [INF] [Primary:S31:P2201:T3201] BetterGenshinImpact.GameTask.Common.TaskControl\r\n领取尘歌壶奖励:\"退出到主页\"\r\n\r\n[13:36:54.328] [INF] [Primary:S31:P2201:T3201] BetterGenshinImpact.GameTask.TaskRunner\r\n→ \"任务结束\"\r\n\r\n[13:36:57.233] [INF] [Primary:S31:P2201:T3201] BetterGenshinImpact.GameTask.Common.TaskControl\r\n检查每日奖励结果：\"今日奖励已领取\"\r\n\r\n[13:36:58.960] [INF] [Primary:S31:P2201:T3201] BetterGenshinImpact.ViewModel.Pages.OneDragonFlowViewModel\r\n一条龙和配置组任务结束\r\n\r\n[13:37:02.333] [INF] [Primary:S31:P2201:T3201] BetterGenshinImpact.GameTask.TaskRunner\r\n→ \"任务结束\"\r\n\r\n"
+}

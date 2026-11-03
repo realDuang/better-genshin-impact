@@ -1,0 +1,28 @@
+{
+  "RunId": "fixture-teleport-failure-03",
+  "Started": "2020-01-03T08:00:02.3041997+08:00",
+  "Profile": "Fixture-Daily",
+  "Phase": "finished",
+  "Result": "exited",
+  "ChildSession": 23,
+  "BetterGiPid": 1203,
+  "ShutdownEligible": false,
+  "ExitCode": 0,
+  "Detail": "",
+  "AttemptCount": 1,
+  "Attempts": [
+    {
+      "Number": 1,
+      "Started": "2020-01-03T08:00:03.0286517+08:00",
+      "Updated": "2020-01-03T08:25:08.7381392+08:00",
+      "ChildSession": 23,
+      "BetterGiPid": 1203,
+      "ExitCode": 0,
+      "Result": "exited",
+      "Detail": "",
+      "CleanupSucceeded": true,
+      "Retryable": true
+    }
+  ],
+  "Updated": "2020-01-03T08:25:08.7726398+08:00"
+}

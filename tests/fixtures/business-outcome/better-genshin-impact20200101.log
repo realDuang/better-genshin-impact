@@ -1,0 +1,204 @@
+[08:01:47.523] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.ViewModel.Pages.OneDragonFlowViewModel
+一条龙任务执行: 1/5
+
+[08:01:50.594] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+邮件："全部领取"
+
+[08:01:53.868] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.TaskRunner
+→ "任务结束"
+
+[08:01:53.870] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.ViewModel.Pages.OneDragonFlowViewModel
+一条龙任务执行: 2/5
+
+[08:01:53.879] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+→ "前往合成台" 开始
+
+[08:02:27.969] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+→ "前往合成台" 结束
+
+[08:02:28.988] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.TaskRunner
+→ "任务结束"
+
+[08:02:28.988] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.ViewModel.Pages.OneDragonFlowViewModel
+一条龙任务执行: 3/5
+
+[08:02:28.996] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境任务：执行
+
+[08:02:29.046] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+→ "自动秘境，" 用尽所有浓缩树脂和原粹树脂后结束
+
+[08:02:33.547] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：传送到秘境"根据提升指南选择秘境"
+
+[08:02:48.604] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：至冬秘境使用文本OCR选择交互项 "荒坠的圣迹"
+
+[08:03:01.202] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：点击 "单人挑战"
+
+[08:03:02.662] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：进入 "队伍选择界面"
+
+[08:03:21.907] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：点击 "地脉异常"
+
+[08:03:23.164] [WRN] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+未完整匹配到当前队伍，使用匹配度最高的队伍："万能战斗策略（萌新推荐）"
+
+[08:03:23.373] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："1. 走到钥匙处启动"
+
+[08:03:24.614] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："2. 执行战斗策略"
+
+[08:04:49.924] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："3. 寻找石化古树"
+
+[08:04:58.406] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："4. 走到石化古树处"
+
+[08:05:05.920] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："5. 领取奖励"
+
+[08:05:09.508] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+"自动秘境"：使用 "浓缩树脂", 数量：1
+
+[08:05:11.861] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：开始奖励识别
+
+[08:05:16.546] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：本轮奖励识别结果 "好感经验 x60, 摩拉 x10125, 「坚忍」的哲学 x1, 「坚忍」的指引 x6, 「坚忍」的教导 x7"
+
+[08:05:21.498] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：点击 "地脉异常"
+
+[08:05:22.653] [WRN] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+未完整匹配到当前队伍，使用匹配度最高的队伍："万能战斗策略（萌新推荐）"
+
+[08:05:22.855] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："1. 走到钥匙处启动"
+
+[08:05:23.196] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："2. 执行战斗策略"
+
+[08:06:23.068] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："3. 寻找石化古树"
+
+[08:06:31.520] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："4. 走到石化古树处"
+
+[08:06:36.637] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："5. 领取奖励"
+
+[08:06:39.944] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+"自动秘境"：使用 "浓缩树脂", 数量：1
+
+[08:06:42.293] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：开始奖励识别
+
+[08:06:45.514] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：本轮奖励识别结果 "好感经验 x60, 摩拉 x10125, 「坚忍」的指引 x6, 「坚忍」的教导 x6"
+
+[08:06:50.385] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：点击 "地脉异常"
+
+[08:06:51.519] [WRN] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+未完整匹配到当前队伍，使用匹配度最高的队伍："万能战斗策略（萌新推荐）"
+
+[08:06:51.720] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："1. 走到钥匙处启动"
+
+[08:06:52.064] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："2. 执行战斗策略"
+
+[08:07:45.874] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："3. 寻找石化古树"
+
+[08:07:50.956] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："4. 走到石化古树处"
+
+[08:07:57.430] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境："5. 领取奖励"
+
+[08:08:00.564] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+"自动秘境"：使用 "原粹树脂", 数量：20
+
+[08:08:02.890] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：开始奖励识别
+
+[08:08:06.177] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境：本轮奖励识别结果 "好感经验 x20, 摩拉 x3375, 「坚忍」的指引 x2, 「坚忍」的教导 x2"
+
+[08:08:06.402] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+体力耗尽或者设置轮次已达标，结束自动秘境
+
+[08:08:23.293] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.TaskRunner
+→ "任务结束"
+
+[08:08:23.293] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.ViewModel.Pages.OneDragonFlowViewModel
+一条龙任务执行: 4/5
+
+[08:08:23.300] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+→ "前往冒险家协会领取奖励" 开始
+
+[08:09:23.024] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+→ "前往冒险家协会领取奖励" 结束
+
+[08:09:34.739] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.TaskRunner
+→ "任务结束"
+
+[08:09:34.740] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.ViewModel.Pages.OneDragonFlowViewModel
+一条龙任务执行: 5/5
+
+[08:09:37.416] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+领取尘歌壶奖励:"洞天名称：清琼岛"
+
+[08:09:49.036] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+领取尘歌壶奖励:"在清琼岛，调整位置"
+
+[08:09:49.986] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+领取尘歌壶奖励:"寻找阿圆"
+
+[08:09:58.683] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+领取尘歌壶奖励:"寻找阿圆成功"
+
+[08:09:58.683] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+领取尘歌壶奖励:"接近阿圆"
+
+[08:09:59.869] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+领取尘歌壶奖励:"接近阿圆成功"
+
+[08:10:06.404] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+领取尘歌壶奖励:"领取好感和宝钱"
+
+[08:10:14.344] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+领取尘歌壶奖励:"购买商店物品"
+
+[08:10:14.887] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+领取尘歌壶奖励:购买 "exp_bottle_big" 
+
+[08:10:15.770] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+领取尘歌壶奖励:"商店物品售空"
+
+[08:10:17.524] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+领取尘歌壶奖励:购买 "exp_bottle_small" 
+
+[08:10:18.392] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+领取尘歌壶奖励:"商店物品售空"
+
+[08:10:21.014] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+领取尘歌壶奖励:"购买商店物品完成"
+
+[08:10:22.075] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.Common.TaskControl
+领取尘歌壶奖励:"退出到主页"
+
+[08:10:40.654] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.TaskRunner
+→ "任务结束"
+
+[08:10:44.964] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.ViewModel.Pages.OneDragonFlowViewModel
+一条龙和配置组任务结束
+
+[08:10:48.560] [INF] [ChildSession:S21:P1201:T3101] BetterGenshinImpact.GameTask.TaskRunner
+→ "任务结束"
+

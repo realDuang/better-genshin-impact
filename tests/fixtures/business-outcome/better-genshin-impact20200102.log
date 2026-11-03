@@ -1,0 +1,108 @@
+[08:01:45.397] [INF] [Primary:S22:P1202:T3102] BetterGenshinImpact.ViewModel.Pages.OneDragonFlowViewModel
+一条龙任务执行: 1/5
+
+[08:01:48.296] [INF] [Primary:S22:P1202:T3102] BetterGenshinImpact.GameTask.Common.TaskControl
+邮件："全部领取"
+
+[08:01:51.514] [INF] [Primary:S22:P1202:T3102] BetterGenshinImpact.GameTask.TaskRunner
+→ "任务结束"
+
+[08:01:51.516] [INF] [Primary:S22:P1202:T3102] BetterGenshinImpact.ViewModel.Pages.OneDragonFlowViewModel
+一条龙任务执行: 2/5
+
+[08:01:51.524] [INF] [Primary:S22:P1202:T3102] BetterGenshinImpact.GameTask.Common.TaskControl
+→ "前往合成台" 开始
+
+[08:02:34.725] [WRN] [Primary:S22:P1202:T3102] BetterGenshinImpact.GameTask.Common.TaskControl
+目标传送点绝对坐标定位失败："地图定位精度不足：uncertainty=16.0, allowed=8.0"
+
+[08:02:35.043] [WRN] [Primary:S22:P1202:T3102] BetterGenshinImpact.GameTask.Common.TaskControl
+地图定位精度不足：uncertainty=16.0, allowed=8.0  重试
+
+[08:02:54.590] [INF] [Primary:S22:P1202:T3102] BetterGenshinImpact.GameTask.Common.TaskControl
+→ "前往合成台" 结束
+
+[08:02:55.613] [INF] [Primary:S22:P1202:T3102] BetterGenshinImpact.GameTask.TaskRunner
+→ "任务结束"
+
+[08:02:55.613] [INF] [Primary:S22:P1202:T3102] BetterGenshinImpact.ViewModel.Pages.OneDragonFlowViewModel
+一条龙任务执行: 3/5
+
+[08:02:55.622] [INF] [Primary:S22:P1202:T3102] BetterGenshinImpact.GameTask.Common.TaskControl
+自动秘境任务：执行
+
+[08:02:55.689] [INF] [Primary:S22:P1202:T3102] BetterGenshinImpact.GameTask.Common.TaskControl
+→ "自动秘境，" 用尽所有浓缩树脂和原粹树脂后结束
+
+[08:03:02.698] [ERR] [Primary:S22:P1202:T3102] BetterGenshinImpact.GameTask.TaskRunner
+提升指南秘境名称识别或地图匹配失败，请查看前面的OCR日志；这不代表没有培养目标
+
+[08:03:02.704] [INF] [Primary:S22:P1202:T3102] BetterGenshinImpact.GameTask.TaskRunner
+→ "任务结束"
+
+[08:03:02.704] [INF] [Primary:S22:P1202:T3102] BetterGenshinImpact.ViewModel.Pages.OneDragonFlowViewModel
+一条龙任务执行: 4/5
+
+[08:03:02.712] [INF] [Primary:S22:P1202:T3102] BetterGenshinImpact.GameTask.Common.TaskControl
+→ "前往冒险家协会领取奖励" 开始
+
+[08:03:45.689] [INF] [Primary:S22:P1202:T3102] BetterGenshinImpact.GameTask.Common.TaskControl
+→ "前往冒险家协会领取奖励" 结束
+
+[08:03:54.957] [INF] [Primary:S22:P1202:T3102] BetterGenshinImpact.GameTask.TaskRunner
+→ "任务结束"
+
+[08:03:54.958] [INF] [Primary:S22:P1202:T3102] BetterGenshinImpact.ViewModel.Pages.OneDragonFlowViewModel
+一条龙任务执行: 5/5
+
+[08:03:57.498] [INF] [Primary:S22:P1202:T3102] BetterGenshinImpact.GameTask.Common.TaskControl
+领取尘歌壶奖励:"洞天名称：清琼岛"
+
+[08:04:08.123] [INF] [Primary:S22:P1202:T3102] BetterGenshinImpact.GameTask.Common.TaskControl
+领取尘歌壶奖励:"在清琼岛，调整位置"
+
+[08:04:09.076] [INF] [Primary:S22:P1202:T3102] BetterGenshinImpact.GameTask.Common.TaskControl
+领取尘歌壶奖励:"寻找阿圆"
+
+[08:04:27.409] [INF] [Primary:S22:P1202:T3102] BetterGenshinImpact.GameTask.Common.TaskControl
+领取尘歌壶奖励:"寻找阿圆成功"
+
+[08:04:27.409] [INF] [Primary:S22:P1202:T3102] BetterGenshinImpact.GameTask.Common.TaskControl
+领取尘歌壶奖励:"接近阿圆"
+
+[08:04:28.829] [INF] [Primary:S22:P1202:T3102] BetterGenshinImpact.GameTask.Common.TaskControl
+领取尘歌壶奖励:"接近阿圆成功"
+
+[08:04:35.498] [INF] [Primary:S22:P1202:T3102] BetterGenshinImpact.GameTask.Common.TaskControl
+领取尘歌壶奖励:"领取好感和宝钱"
+
+[08:04:43.569] [INF] [Primary:S22:P1202:T3102] BetterGenshinImpact.GameTask.Common.TaskControl
+领取尘歌壶奖励:"购买商店物品"
+
+[08:04:44.120] [INF] [Primary:S22:P1202:T3102] BetterGenshinImpact.GameTask.Common.TaskControl
+领取尘歌壶奖励:购买 "exp_bottle_big" 
+
+[08:04:44.940] [INF] [Primary:S22:P1202:T3102] BetterGenshinImpact.GameTask.Common.TaskControl
+领取尘歌壶奖励:"购买商店物品最大数量"
+
+[08:04:47.641] [INF] [Primary:S22:P1202:T3102] BetterGenshinImpact.GameTask.Common.TaskControl
+领取尘歌壶奖励:购买 "exp_bottle_small" 
+
+[08:04:48.422] [INF] [Primary:S22:P1202:T3102] BetterGenshinImpact.GameTask.Common.TaskControl
+领取尘歌壶奖励:"购买商店物品最大数量"
+
+[08:04:51.931] [INF] [Primary:S22:P1202:T3102] BetterGenshinImpact.GameTask.Common.TaskControl
+领取尘歌壶奖励:"购买商店物品完成"
+
+[08:04:52.968] [INF] [Primary:S22:P1202:T3102] BetterGenshinImpact.GameTask.Common.TaskControl
+领取尘歌壶奖励:"退出到主页"
+
+[08:05:12.346] [INF] [Primary:S22:P1202:T3102] BetterGenshinImpact.GameTask.TaskRunner
+→ "任务结束"
+
+[08:05:18.712] [INF] [Primary:S22:P1202:T3102] BetterGenshinImpact.ViewModel.Pages.OneDragonFlowViewModel
+一条龙和配置组任务结束
+
+[08:05:23.184] [INF] [Primary:S22:P1202:T3102] BetterGenshinImpact.GameTask.TaskRunner
+→ "任务结束"
+
