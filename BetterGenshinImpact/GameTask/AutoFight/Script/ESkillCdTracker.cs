@@ -38,6 +38,8 @@ public static class ESkillCdTracker
         ["莉奈娅"] = FallbackType.SetFull,
         ["玛薇卡"] = FallbackType.MinRemaining,
         ["法尔伽"] = FallbackType.MinRemaining,
+        // Enhanced E replaces the base skill icon; preserve the remaining base cooldown.
+        ["兹白"] = FallbackType.MinRemaining,
     };
 
     /// <summary>角色名 → E 技能就绪的时间戳（UTC）</summary>

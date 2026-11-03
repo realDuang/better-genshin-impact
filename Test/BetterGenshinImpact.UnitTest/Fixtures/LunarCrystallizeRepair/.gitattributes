@@ -1,0 +1,2 @@
+# Preserve exact source-script bytes, including the trailing blank line.
+*.txt -text -whitespace
