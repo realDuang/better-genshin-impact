@@ -64,7 +64,7 @@ class RetryReportTests(unittest.TestCase):
         self.assertIn('第 1 次', text)
         self.assertIn('第 2 次', text)
         self.assertIn('0xC0000005', text)
-        self.assertIn('以下步骤结果对应第 2 次', text)
+        self.assertIn('第 2 次完成', text)
 
     def test_recovered_run_still_reports_final_attempt_business_warnings(self):
         report = summarize(status([attempt(1, failed=True), attempt(2)]), recovered_log(warning=True))
@@ -88,7 +88,7 @@ class RetryReportTests(unittest.TestCase):
         self.assertEqual(report['outcome'], 'failed')
         self.assertFalse(report['attempts'][0]['cleanup_succeeded'])
         text = render_text(report)
-        self.assertIn('未重试：分身清理未完成', text)
+        self.assertIn('分身清理未完成，未重试', text)
         self.assertNotIn('第 2 次', text)
 
     def test_attempt_window_excludes_reused_pid_records_from_before_retry(self):

@@ -32,15 +32,10 @@ NAME_CUES = (
 )
 OUTCOMES = {
     'failed': '执行失败', 'time-limit': '超时停止', 'skipped': '跳过',
-    'partial': '存在任务异常', 'finished': '流程结束',
-    'needs-attention': '需要检查', 'unknown': '结果待确认', 'incomplete': '证据不完整',
+    'partial': '有任务失败', 'finished': '完成',
+    'needs-attention': '有提示', 'unknown': '结果未识别', 'incomplete': '记录不完整',
 }
-STATES = {'ended': '已结束', 'failed': '异常', 'skipped': '跳过', 'incomplete': '未见结束'}
-REWARDS = {'claimed': '已领取', 'unclaimed': '未领取', 'unknown': '无法确认'}
-ATTEMPT_RESULTS = {'exited': '已退出', 'failed': '失败', 'running': '执行中'}
-KNOWN_WARNING_PREFIXES = (
-    'F选项选择：', '未能通过文本OCR选择秘境', '单人挑战 按键未出现', '检查每日奖励结果',
-)
+REWARDS = {'claimed': '已领取', 'unclaimed': '未领取', 'unknown': '未识别'}
 
 
 def _add(items, text):
@@ -52,6 +47,37 @@ def _add(items, text):
             item['count'] += 1
             return
     items.append({'text': text, 'count': 1})
+
+
+
+def _record_step_facts(step, body, level, logger):
+    """Extract facts from attributed native records without changing outcome rules."""
+    if logger != 'TaskControl' or level not in {'INF', 'INFO'}:
+        return
+    facts = step['facts']
+    if step['name'] == '邮件' and '邮件：' in body and '全部领取' in body:
+        facts['mail_claim_action'] = True
+    if step['name'] == '尘歌壶' and '领取好感和宝钱' in body:
+        facts['teapot_claim_action'] = True
+    if step['name'] != '自动秘境':
+        return
+    if '检测到秘境结束提示(挑战达成)' in body:
+        facts['challenges_completed'] = facts.get('challenges_completed', 0) + 1
+    if match := re.fullmatch(r'提升指南选择秘境："(.+)"', body):
+        facts['domain'] = match[1]
+    if match := re.fullmatch(r'原粹树脂：(\d+)，浓缩树脂：(\d+)', body):
+        facts['resin_remaining'] = {'original': int(match[1]), 'condensed': int(match[2])}
+    if match := re.fullmatch(r'"?自动秘境"?：使用\s+"(原粹树脂|浓缩树脂)", 数量：(\d+)', body):
+        facts['pending_resin_action'] = (match[1], int(match[2]))
+    if match := re.fullmatch(r'自动秘境：本轮奖励识别结果\s+"(.+)"', body):
+        facts['reward_claims'] = facts.get('reward_claims', 0) + 1
+        if pending := facts.pop('pending_resin_action', None):
+            used = facts.setdefault('resin_used', {})
+            used[pending[0]] = used.get(pending[0], 0) + pending[1]
+        items = facts.setdefault('reward_items', {})
+        for item in match[1].split(', '):
+            if reward := re.fullmatch(r'(.+?)\s+x(\d+)', item):
+                items[reward[1]] = items.get(reward[1], 0) + int(reward[2])
 
 
 def _compact_error(body):
@@ -228,7 +254,7 @@ def summarize(status: dict, logs: list[tuple[str, str]]) -> dict:
             current = {
                 'index': int(match[1]), 'total': int(match[2]),
                 'name': f'步骤 {int(match[1])}', 'state': 'incomplete',
-                'errors': [], 'warnings': [], 'notes': [], 'ended': False,
+                'errors': [], 'warnings': [], 'notes': [], 'facts': {}, 'ended': False,
             }
             summary['steps'].append(current)
         # Final reward checks belong to the whole run, even after an unclosed step.
@@ -257,6 +283,7 @@ def summarize(status: dict, logs: list[tuple[str, str]]) -> dict:
                 if cue in body and current['name'].startswith('步骤 '):
                     current['name'] = name
                     break
+            _record_step_facts(current, body, level, logger)
             if '无需合成浓缩树脂' in body:
                 _add(current['notes'], '无需合成浓缩树脂')
             for cue in AMBIGUOUS_REWARDS + ('商店物品售空', '邮件：'):
@@ -344,22 +371,6 @@ def _display(item, limit=240):
     return text + (f' ×{item["count"]}' if item['count'] > 1 else '')
 
 
-def _warning_suffix(items):
-    expected = [{**item, 'count': item['expected_count']}
-                for item in items if item.get('expected_count')]
-    text = ('；提示：' + '；'.join(_display(item) for item in expected)) if expected else ''
-    items = [{**item, 'count': item['count'] - item.get('expected_count', 0)}
-             for item in items if item['count'] > item.get('expected_count', 0)]
-    if not items:
-        return text
-    count = sum(item['count'] for item in items)
-    unknown = [item for item in items if not item['text'].startswith(KNOWN_WARNING_PREFIXES)]
-    text += f'；警告 {count} 条（见完整记录）'
-    if unknown:
-        text += '；警告首条：' + _display(unknown[0], limit=160)
-    return text
-
-
 def _attempt_exit_code(value):
     if value is None:
         return '未记录'
@@ -373,62 +384,103 @@ def _attempt_exit_code(value):
     return text
 
 
+def _step_facts_text(step):
+    facts = step.get('facts', {})
+    details = []
+    if facts.get('mail_claim_action'):
+        details.append('已执行全部领取')
+    if facts.get('teapot_claim_action'):
+        details.append('已执行好感和宝钱领取')
+    if facts.get('domain'):
+        details.append(facts['domain'])
+    if facts.get('challenges_completed'):
+        details.append(f'通关 {facts["challenges_completed"]} 次')
+    if facts.get('reward_claims'):
+        details.append(f'领奖 {facts["reward_claims"]} 次')
+    for resin, count in facts.get('resin_used', {}).items():
+        details.append(f'消耗{resin} {count}')
+    expected_resin_stop = any(item['text'] == '树脂不足' and item.get('expected_count')
+                              for item in step['warnings'])
+    if expected_resin_stop:
+        details.append('树脂不足')
+        remaining = facts.get('resin_remaining', {})
+        if (not facts.get('reward_claims') and remaining.get('original', 20) < 20
+                and remaining.get('condensed', 1) == 0):
+            details.append('未领奖')
+    for note in step['notes']:
+        text = note['text']
+        if text == '无需合成浓缩树脂':
+            details.append('无需合成')
+        elif '探索派遣' in text and '未探索完成或已领取' in text:
+            details.append('派遣无可领取项')
+        elif '每日委托' in text and '未完成或者已领取' in text:
+            details.append('已交互')
+        elif '商店物品售空' in text:
+            details.append('商店物品售空')
+        elif '邮件：' not in text:
+            details.append(_display(note, limit=100))
+    return list(dict.fromkeys(details))
+
+
 def render_text(summary: dict) -> str:
-    """Render a bounded human report; JSON retains all compact evidence."""
-    lines = [f'BetterGI 运行 {summary["run_id"]}｜{OUTCOMES[summary["outcome"]]}']
+    """Render concise facts; attribution, lifecycle detail and raw errors stay in JSON."""
+    lines = [f'BetterGI｜{OUTCOMES[summary["outcome"]]}']
     start, end = _aware_time(summary.get('started')), _aware_time(summary.get('updated'))
     if start and end:
-        lines.append(f'时间：{start:%m/%d %H:%M:%S}–{end.astimezone(start.tzinfo):%m/%d %H:%M:%S}（UTC{start:%z}）')
-    lifecycle = summary['lifecycle']
-    lines.append(f'程序：{lifecycle["phase"] or "未知"}/{lifecycle["result"] or "未知"}；退出码：{summary["exit_code"] if summary["exit_code"] is not None else "未记录"}')
-    if summary['process_exit_code'] != summary['exit_code']:
-        lines.append(f'进程退出码：{_attempt_exit_code(summary["process_exit_code"])}；计划任务退出码：{_attempt_exit_code(summary["exit_code"])}')
-    if lifecycle['detail']:
-        lines.append('运行说明：' + _display({'text': lifecycle['detail'], 'count': 1}))
+        finish = end.astimezone(start.tzinfo)
+        duration = max(0, int((end - start).total_seconds()))
+        lines.append(f'{start:%m/%d %H:%M:%S}–{finish:%H:%M:%S}｜{duration // 60}分{duration % 60}秒')
     attempts = summary.get('attempts', [])
-    if attempts:
-        lines.append(f'尝试记录：{len(attempts)} 次；以下步骤结果对应第 {attempts[-1]["number"]} 次。')
+    if len(attempts) > 1 or any(attempt['exit_code'] not in (None, 0, '0') for attempt in attempts):
+        parts = []
         for attempt in attempts:
-            result = attempt['result'] or '未知'
-            cleanup = {True: '已完成', False: '未完成'}.get(attempt['cleanup_succeeded'], '未记录')
-            line = f'第 {attempt["number"]} 次：{ATTEMPT_RESULTS.get(result, result)}；退出码：{_attempt_exit_code(attempt["exit_code"])}；分身清理：{cleanup}'
-            if attempt['detail']:
-                line += '；' + _display({'text': attempt['detail'], 'count': 1})
-            lines.append(line)
-        if len(attempts) == 1 and attempts[0]['cleanup_succeeded'] is False:
-            lines.append('未重试：分身清理未完成。')
-    lines.append('每日奖励检测：' + REWARDS[summary['reward']['state']])
-    if summary['legacy_progress']:
-        progress = summary['legacy_progress']
-        lines.append(f'旧记录：已启动 {progress["stages_started"]} 个阶段；流程结束标记：{progress["flow_completed"]}')
+            code = attempt['exit_code']
+            outcome = '完成' if attempt['result'] == 'exited' and code in (0, '0') else '失败'
+            part = f'第 {attempt["number"]} 次{outcome}'
+            if code not in (None, 0, '0'):
+                part += f'（{_attempt_exit_code(code)}）'
+            parts.append(part)
+        lines.append('；'.join(parts))
+    if any(attempt['cleanup_succeeded'] is False for attempt in attempts):
+        lines.append('分身清理未完成，未重试')
+    if not attempts and summary['process_exit_code'] not in (None, 0, '0'):
+        lines.append('程序退出：' + _attempt_exit_code(summary['process_exit_code']))
+    if summary['lifecycle']['detail'] and not attempts:
+        lines.append('运行异常：' + _display({'text': summary['lifecycle']['detail'], 'count': 1}))
     steps = summary['steps']
-    # Exception-bearing steps take precedence if an unexpectedly long run occurs.
     shown = sorted(steps, key=lambda step: (not bool(step['errors']), step['index']))[:20]
     for step in sorted(shown, key=lambda item: item['index']):
-        line = f'{step["index"]}/{step["total"]} {step["name"]}：{STATES[step["state"]]}'
-        detail = step['errors'] or step['notes']
-        if detail:
-            line += '；' + '；'.join(_display(item) for item in detail[:2])
-            if len(detail) > 2:
-                line += f'；另 {len(detail) - 2} 项见完整记录'
-        line += _warning_suffix(step['warnings'])
-        lines.append(line)
-    if len(steps) > len(shown):
-        lines.append(f'另 {len(steps) - len(shown)} 个步骤见完整记录。')
-    errors = summary['global_errors']
-    for item in errors[:8]:
-        lines.append('全局异常：' + _display(item))
-    if len(errors) > 8:
-        lines.append(f'另 {len(errors) - 8} 条全局异常见完整记录。')
-    warnings = summary['global_warnings']
-    # The native daily check has already been rendered once above.
-    warnings = [item for item in warnings if not item['text'].startswith('检查每日奖励结果')]
-    if warnings:
-        lines.append('全局' + _warning_suffix(warnings).lstrip('；'))
-    for issue in summary['evidence_issues'][:5]:
-        lines.append('证据限制：' + issue)
-    if len(summary['evidence_issues']) > 5:
-        lines.append(f'另 {len(summary["evidence_issues"]) - 5} 条证据限制见完整记录。')
+        details = _step_facts_text(step)
+        if step['errors']:
+            details.extend('异常：' + _display(item, limit=160) for item in step['errors'][:2])
+        warnings = [{**item, 'count': item['count'] - item.get('expected_count', 0)}
+                    for item in step['warnings'] if item['count'] > item.get('expected_count', 0)]
+        details.extend('警告：' + _display(item, limit=140) for item in warnings[:2])
+        if not step['ended']:
+            details.insert(0, '未完成')
+        if not details:
+            details.append({'ended': '已结束', 'skipped': '跳过', 'failed': '异常'}.get(step['state'], '未完成'))
+        lines.append(step['name'] + '：' + '；'.join(details))
+        if items := step.get('facts', {}).get('reward_items'):
+            lines.append('奖励：' + '、'.join(f'{name} ×{count}' for name, count in list(items.items())[:8]))
+    lines.append('每日奖励：' + REWARDS[summary['reward']['state']])
+    for item in summary['global_errors'][:5]:
+        lines.append('异常：' + _display(item))
+    for item in summary['global_warnings'][:3]:
+        if not item['text'].startswith('检查每日奖励结果'):
+            lines.append('警告：' + _display(item, limit=160))
+    if summary['evidence_issues']:
+        labels = []
+        for issue in summary['evidence_issues']:
+            if '多个 T' in issue or '不一致' in issue:
+                labels.append('运行记录不一致')
+            elif '结束' in issue:
+                labels.append('结束记录缺失')
+            elif '步骤' in issue:
+                labels.append('步骤记录不完整')
+            else:
+                labels.append('运行记录不完整')
+        lines.append('记录：' + '；'.join(dict.fromkeys(labels)))
     return '\n'.join(lines) + '\n'
 
 

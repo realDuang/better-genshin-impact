@@ -28,9 +28,9 @@ class ExpectedGameMessagesTests(unittest.TestCase):
         warning = report['steps'][2]['warnings'][0]
         self.assertEqual((warning['text'], warning['count'], warning['expected_count']), ('树脂不足', 1, 1))
         text = render_text(report)
-        self.assertIn('提示：树脂不足', text)
-        self.assertIn('未完成或者已领取', text)
-        self.assertIn('未探索完成或已领取', text)
+        self.assertIn('树脂不足', text)
+        self.assertIn('已交互', text)
+        self.assertIn('派遣无可领取项', text)
 
     def test_native_navigation_failure_and_cooldown_warnings_stay_actionable(self):
         for name, outcome, exit_code in [('cooldown', 'partial', 2), ('original', 'needs-attention', 0)]:

@@ -60,3 +60,7 @@ At the 2026-11-03 review, official `main` was `07d38b31b5531c342d318316f3240ed62
 Native result improvements should reuse upstream typed task results and repair OneDragon child-result aggregation and persistence before software exit. Keep scheduling, child ownership, cleanup, delivery, and WOL eligibility external. Preserve separate process and business outcomes: assigning a new nonzero native exit code for game failure can accidentally trigger the outer runner's crash retry.
 
 Recommended candidate acceptance covers successful gameplay, a failed step with normal process exit, expected resin exhaustion, cancellation, missing terminal evidence, and cleanup before any retry. Preserve ordinary native logs alongside machine-readable results.
+
+## Source acceptance revision
+
+The subsequent revision adds strict domain-entry preconditions with main-UI recovery on failure, captures a game screenshot at terminal big-map and teleport-panel failures, and renders concise deterministic execution facts. The entry baseline compiled and failed six of nine regression cases; the corrected suite passed all 48 focused C# cases. The concise reporter passed 20 Python cases. Native report counts use attributed challenge completion and confirmed reward-result records; planned resin inputs alone do not establish consumed resin.
