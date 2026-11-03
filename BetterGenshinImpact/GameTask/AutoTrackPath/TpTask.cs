@@ -97,9 +97,7 @@ public class TpTask
     private const int TeleportPanelInitialDelayMs = 200;
     private const int TeleportConfirmTimeoutMs = 5000;
     private const int SwitchAreaCandidateTimeoutMs = 1500;
-    private const int SwitchAreaSelectionTimeoutMs = 600;
-    private const int SwitchAreaSelectionMinimumWaitMs = 120;
-    private const int SwitchAreaSelectionStableChecks = 2;
+    private const int SwitchAreaSelectionTimeoutMs = 1500;
     private const int TeleportTimeoutMs = 60_000;
     private const int TeleportLoadingPollIntervalMs = 100;
     private const int TeleportMinimumCompletionMs = 1000;
@@ -2450,29 +2448,79 @@ public class TpTask
 
     private async Task<bool> TrySwitchArea(string areaName)
     {
-        GameCaptureRegion.GameRegionClick((rect, scale) => (rect.Width - 160 * scale, rect.Height - 60 * scale));
-        await Delay(50, ct);
-        var minCountryLocalized = this.stringLocalizer.WithCultureGet(this.cultureInfo, areaName);
+        ClearRememberedAreaSwitchCenterPoint();
+        var localizedAreaName = this.stringLocalizer.WithCultureGet(this.cultureInfo, areaName);
+        for (var attempt = 0; attempt < 2; attempt++)
+        {
+            ct.ThrowIfCancellationRequested();
+            if (await TrySwitchAreaOnce(areaName, localizedAreaName))
+            {
+                RememberAreaSwitchCenterPoint(areaName);
+                Logger.LogInformation("切换到区域：{Country}", areaName);
+                return true;
+            }
+
+            // Restore a known map state before retrying or returning to another teleport task.
+            await new ReturnMainUiTask().Start(ct);
+            await CheckInBigMapUi();
+        }
+
+        return false;
+    }
+
+    private async Task<bool> TrySwitchAreaOnce(string areaName, string localizedAreaName)
+    {
+        using (var capture = CaptureToRectArea())
+        {
+            var candidates = FindSwitchAreaCandidates(capture);
+            try
+            {
+                if (!IsSwitchAreaMenuVisible(candidates))
+                {
+                    if (!Bv.IsInBigMapUi(capture))
+                    {
+                        return false;
+                    }
+
+                    GameCaptureRegion.GameRegionClick((rect, scale) => (rect.Width - 160 * scale, rect.Height - 60 * scale));
+                    await Delay(120, ct);
+                }
+            }
+            finally
+            {
+                foreach (var candidate in candidates) candidate.Dispose();
+            }
+        }
+
         var candidatesText = "";
         var stopwatch = Stopwatch.StartNew();
         while (stopwatch.ElapsedMilliseconds < SwitchAreaCandidateTimeoutMs)
         {
             ct.ThrowIfCancellationRequested();
-            using var ra = CaptureToRectArea();
-            var list = FindSwitchAreaCandidates(ra);
-            candidatesText = FormatSwitchAreaCandidateTexts(list);
-            var matchRect = list
-                .OrderByDescending(r => r.Y)
-                .FirstOrDefault(r => IsSwitchAreaCandidateMatch(r.Text, minCountryLocalized, areaName));
-            if (matchRect != null)
+            using var capture = CaptureToRectArea();
+            var candidates = FindSwitchAreaCandidates(capture);
+            Rect? clickedCandidateRect = null;
+            try
             {
-                var clickedCandidateRect = new Rect(matchRect.X, matchRect.Y, matchRect.Width, matchRect.Height);
-                matchRect.Click();
-                await Delay(50, ct);
-                await WaitForAreaSelectionApplied(areaName, minCountryLocalized, clickedCandidateRect);
-                RememberAreaSwitchCenterPoint(areaName);
-                Logger.LogInformation("切换到区域：{Country}", areaName);
-                return true;
+                candidatesText = FormatSwitchAreaCandidateTexts(candidates);
+                var match = candidates
+                    .OrderByDescending(candidate => candidate.Y)
+                    .FirstOrDefault(candidate => IsSwitchAreaCandidateMatch(candidate.Text, localizedAreaName, areaName));
+                if (match != null && IsSwitchAreaMenuVisible(candidates))
+                {
+                    clickedCandidateRect = new Rect(match.X, match.Y, match.Width, match.Height);
+                    match.Click();
+                }
+            }
+            finally
+            {
+                foreach (var candidate in candidates) candidate.Dispose();
+            }
+
+            if (clickedCandidateRect is { } clickedRect)
+            {
+                await Delay(120, ct);
+                return await WaitForAreaSelectionApplied(areaName, localizedAreaName, clickedRect);
             }
 
             await Delay(UiRecognitionPollIntervalMs, ct);
@@ -2485,39 +2533,54 @@ public class TpTask
         return false;
     }
 
-    private async Task WaitForAreaSelectionApplied(
+    private async Task<bool> WaitForAreaSelectionApplied(
         string areaName,
         string localizedAreaName,
         Rect clickedCandidateRect)
     {
         var stopwatch = Stopwatch.StartNew();
-        var consecutiveMissingChecks = 0;
+        var confirmation = new AreaSelectionConfirmation();
         while (stopwatch.ElapsedMilliseconds < SwitchAreaSelectionTimeoutMs)
         {
             ct.ThrowIfCancellationRequested();
             using var capture = CaptureToRectArea();
-            var clickedCandidateStillVisible = FindSwitchAreaCandidates(capture).Any(candidate =>
-                IsSwitchAreaCandidateMatch(candidate.Text, localizedAreaName, areaName) &&
-                IsSameSwitchAreaCandidatePosition(clickedCandidateRect, candidate));
-
-            if (!clickedCandidateStillVisible &&
-                stopwatch.ElapsedMilliseconds >= SwitchAreaSelectionMinimumWaitMs)
+            var candidates = FindSwitchAreaCandidates(capture);
+            try
             {
-                consecutiveMissingChecks++;
-                if (consecutiveMissingChecks >= SwitchAreaSelectionStableChecks)
+                var clickedCandidateStillVisible = candidates.Any(candidate =>
+                    IsSwitchAreaCandidateMatch(candidate.Text, localizedAreaName, areaName) &&
+                    IsSameSwitchAreaCandidatePosition(clickedCandidateRect, candidate));
+                if (confirmation.Observe(
+                        Bv.IsInBigMapUi(capture),
+                        IsSwitchAreaMenuVisible(candidates),
+                        clickedCandidateStillVisible,
+                        stopwatch.ElapsedMilliseconds))
                 {
-                    return;
+                    return true;
                 }
             }
-            else
+            finally
             {
-                consecutiveMissingChecks = 0;
+                foreach (var candidate in candidates) candidate.Dispose();
             }
 
             await Delay(UiRecognitionPollIntervalMs, ct);
         }
 
-        Logger.LogDebug("区域选择动画等待达到上限：{Country}", areaName);
+        Logger.LogWarning("Area selection was not confirmed before timeout: {Country}", areaName);
+        return false;
+    }
+
+    private bool IsSwitchAreaMenuVisible(List<Region> candidates)
+    {
+        var knownNames = MapLazyAssets.Get().CountryPositions.Keys
+            .Concat(Enum.GetValues<MapTypes>().Select(map => map.GetDescription()))
+            .SelectMany(name => new[] { name, this.stringLocalizer.WithCultureGet(this.cultureInfo, name) })
+            .Select(NormalizeSwitchAreaCandidateText)
+            .ToHashSet(StringComparer.Ordinal);
+        return AreaSelectionConfirmation.HasMultipleAreaRows(candidates
+            .Select(candidate => NormalizeSwitchAreaCandidateText(candidate.Text))
+            .Where(knownNames.Contains));
     }
 
     private static bool IsSameSwitchAreaCandidatePosition(Rect clickedCandidateRect, Region candidate)
