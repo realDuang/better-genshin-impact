@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using BetterGenshinImpact.Core.Recognition;
 using BetterGenshinImpact.Core.Script.Dependence;
@@ -18,13 +20,6 @@ public partial class AutoDomainTask
 {
     public const string DevelopmentGuideOption = "根据提升指南选择秘境";
     private string? _guideDomainName;
-
-    private static string NormalizeGuideDomainName(string text)
-    {
-        var name = Regex.Replace(text, @"\s+", "");
-        // 菫/堇及OCR误识别的董，只在完整秘境名称中修正，避免宽泛模糊匹配刷错本。
-        return name.Replace("菫色之庭", "堇色之庭").Replace("董色之庭", "堇色之庭");
-    }
 
     // 提升指南目前按简体中文界面识别；失败时停止，不回退到另一个秘境。
     private async Task ClickGuideText(string text, double x, double y, double w, double h)
@@ -63,36 +58,45 @@ public partial class AutoDomainTask
         await ClickGuideText("秘境", 0.1, 0.2, 0.1, 0.6);
         await ClickGuideText("提升指南", 0.2, 0.17, 0.18, 0.15);
         var knownNames = MapLazyAssets.Get().DomainPositionMap.Keys.ToList();
-        for (var attempt = 0; attempt < 6 && _guideDomainName == null; attempt++)
+        var attempt = 0;
+        _guideDomainName = await DevelopmentGuideScanner.SelectFirstAsync(knownNames, ReadRows, ScrollList, _ct);
+        if (_guideDomainName == null)
+            throw new InvalidOperationException("提升指南秘境名称识别或地图匹配失败，请查看前面的OCR日志；这不代表没有培养目标");
+        Logger.LogInformation("提升指南选择秘境：{Name}", _guideDomainName);
+        await new ReturnMainUiTask().Start(_ct);
+
+        async Task<IReadOnlyList<string>> ReadRows(CancellationToken ct)
         {
+            await Delay(500, ct);
             using var screen = CaptureToRectArea();
             var rows = screen.FindMulti(RecognitionObject.Ocr(
                 screen.Width * 0.39, screen.Height * 0.28, screen.Width * 0.18, screen.Height * 0.46));
             try
             {
-                Logger.LogInformation("提升指南秘境OCR（第{Attempt}次）：{Text}", attempt + 1,
-                    string.Join(" | ", rows.OrderBy(r => r.Y).Select(r => r.Text)));
-                foreach (var row in rows.OrderBy(r => r.Y))
-                {
-                    var recognized = NormalizeGuideDomainName(row.Text);
-                    var candidates = knownNames.Where(name => recognized.Contains(NormalizeGuideDomainName(name))).ToList();
-                    if (candidates.Count == 1)
-                    {
-                        _guideDomainName = candidates[0];
-                        break;
-                    }
-                }
+                var texts = rows.OrderBy(r => r.Y).Select(r => r.Text).ToArray();
+                Logger.LogInformation("提升指南秘境OCR（第{Attempt}次）：{Text}", ++attempt, string.Join(" | ", texts));
+                return texts;
             }
             finally
             {
                 foreach (var row in rows) row.Dispose();
             }
-            if (_guideDomainName == null) await Delay(500, _ct);
         }
-        if (_guideDomainName == null)
-            throw new InvalidOperationException("提升指南秘境名称识别或地图匹配失败，请查看前面的OCR日志；这不代表没有培养目标");
-        Logger.LogInformation("提升指南选择秘境：{Name}", _guideDomainName);
-        await new ReturnMainUiTask().Start(_ct);
+
+        async Task ScrollList(int notches, CancellationToken ct)
+        {
+            ct.ThrowIfCancellationRequested();
+            using (var screen = CaptureToRectArea())
+                GlobalMethod.MoveMouseTo((int)(screen.Width * 0.52), (int)(screen.Height * 0.45));
+            await Delay(100, ct);
+            for (var i = 0; i < Math.Abs(notches); i++)
+            {
+                ct.ThrowIfCancellationRequested();
+                Simulation.SendInput.Mouse.VerticalScroll(Math.Sign(notches));
+                await Delay(70, ct);
+            }
+            await Delay(600, ct);
+        }
     }
 
     private async Task SelectDevelopmentGuideLevel()
