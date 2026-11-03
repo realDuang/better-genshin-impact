@@ -500,55 +500,35 @@ public partial class AutoDomainTask : ISoloTask<Dictionary<string, int>>
         }
 
         var domainName = _guideDomainName ?? _taskParam.DomainName;
+        string? namedOption = null;
         if (!string.IsNullOrEmpty(domainName)
             && MapLazyAssets.Get().DomainPositionMap.TryGetValue(domainName, out var domainPosition)
             && "至冬".Equals(domainPosition.Country, StringComparison.Ordinal))
         {
-            var domainOptionName = domainPosition.Name ?? domainName;
-            Logger.LogInformation("自动秘境：至冬秘境使用文本OCR选择交互项 {Text}", domainOptionName);
-            if (!await new ChooseFOptionTask().SingleSelectText(domainOptionName, _ct))
+            namedOption = domainPosition.Name ?? domainName;
+            Logger.LogInformation("自动秘境：至冬秘境使用文本OCR选择交互项 {Text}", namedOption);
+        }
+
+        await DomainEntryFlow.RunAsync(
+            namedOption == null ? null : () => new ChooseFOptionTask().SingleSelectText(namedOption, _ct),
+            () => NewRetry.WaitForElementDisappear(pickAssets.PickRo,
+                () => Simulation.SendInput.Keyboard.KeyPress(pickAssets.PickVk), _ct, 20, 500),
+            () => NewRetry.WaitForElementDisappear(pickAssets.PickRo, (Action?)null, _ct, 20, 500),
+            () => NewRetry.WaitForElementAppear(GetConfirmRa(singlePlayerChallengeString), null, _ct, 20, 500),
+            EnterConfirmedDomain,
+            async () =>
             {
-                Logger.LogWarning("未能通过文本OCR选择秘境，直接F");
-                await NewRetry.WaitForElementDisappear(
-                    pickAssets.PickRo,
-                    () => Simulation.SendInput.Keyboard.KeyPress(pickAssets.PickVk),
-                    _ct,
-                    20,
-                    500
-                );
-            }
+                await new ReturnMainUiTask().Start(_ct);
+                using var capture = CaptureToRectArea();
+                if (!Bv.IsInMainUi(capture))
+                    Logger.LogWarning("秘境入口失败后未返回主界面");
+            },
+            error => Logger.LogWarning(error, "秘境入口清理失败"),
+            _ct);
+    }
 
-            // 交互输入生效和截图源刷新都存在延迟，等待交互键消失后再识别秘境菜单。
-            await NewRetry.WaitForElementDisappear(
-                pickAssets.PickRo,
-                (Action?)null,
-                _ct,
-                20,
-                500
-            );
-        }
-        else
-        {
-            await NewRetry.WaitForElementDisappear(
-                pickAssets.PickRo,
-                () => Simulation.SendInput.Keyboard.KeyPress(pickAssets.PickVk),
-                _ct,
-                20,
-                500
-            );
-        }
-        var menuFound = await NewRetry.WaitForElementAppear(
-            GetConfirmRa(singlePlayerChallengeString),
-            null,//只等待,不执行操作
-            _ct,
-            20,
-            500
-        );
-        if (!menuFound)
-        {
-            Logger.LogWarning("单人挑战 按键未出现，请检查是否已进入秘境页面");
-        }
-
+    private async Task EnterConfirmedDomain()
+    {
         using var limitedFullyStringRa = CaptureToRectArea();
         var limitedFullyStringRaocrList =
             limitedFullyStringRa.FindMulti(RecognitionObject.Ocr(0, 0, limitedFullyStringRa.Width * 0.5,
