@@ -25,6 +25,13 @@ evidence produces `incomplete` and exit 3. Unexpected warnings retain exit 0 wit
 messages, including a proven normal resin stop, remain informational. Delivery
 status is recorded separately.
 
+Command-line OneDragon awaits the selected workflow and always exits the software
+after that workflow returns. Startup cancellation, explicit task cancellation, an
+empty configuration, and unhandled orchestration exceptions exit with code 1.
+Manual GUI execution keeps its existing completion behavior. Ordinary gameplay
+errors logged by the task runner still finish the process normally and are evaluated
+through `BusinessOutcome` after cleanup.
+
 ## One recovery attempt
 
 A nonzero BetterGI exit (including `0xC0000005`) or a child-desktop startup/lifecycle

@@ -13,6 +13,7 @@ using BetterGenshinImpact.Core.Config;
 using BetterGenshinImpact.Core.Script;
 using BetterGenshinImpact.Core.Script.Group;
 using BetterGenshinImpact.GameTask;
+using BetterGenshinImpact.GameTask.OneDragon;
 using BetterGenshinImpact.GameTask.Common.Element.Assets;
 using BetterGenshinImpact.GameTask.Common.Job;
 using BetterGenshinImpact.Helpers;
@@ -532,7 +533,7 @@ public partial class OneDragonFlowViewModel : ViewModel
     private bool _autoRun = true;
     
     [RelayCommand]
-    private void OnLoaded()
+    private async Task OnLoaded()
     {
         // 组件首次加载时运行一次。
         if (!_autoRun)
@@ -544,34 +545,58 @@ public partial class OneDragonFlowViewModel : ViewModel
         var cmdOptions = CommandLineOptions.Instance;
         if (cmdOptions.Action == CommandLineAction.StartOneDragon)
         {
-            // 通过命令行参数启动一条龙。
-            if (cmdOptions.OneDragonConfigName != null)
+            await OneDragonExecution.RunAsync(true, async isCommandLine =>
             {
-                // 从命令行参数中提取一条龙配置名称。
-                _logger.LogInformation($"参数指定的一条龙配置：{cmdOptions.OneDragonConfigName}");
-                var argsOneDragonConfig = ConfigList.FirstOrDefault(x =>
-                    string.Equals(x.Name, cmdOptions.OneDragonConfigName, StringComparison.Ordinal));
-                if (argsOneDragonConfig != null)
+                // 通过命令行参数启动一条龙。
+                if (cmdOptions.OneDragonConfigName != null)
                 {
-                    // 设定配置，配置下拉框会选定。
-                    SelectedConfig = argsOneDragonConfig;
-                    // 调用选定更新函数。
-                    OnConfigDropDownChanged();
+                    // 从命令行参数中提取一条龙配置名称。
+                    _logger.LogInformation($"参数指定的一条龙配置：{cmdOptions.OneDragonConfigName}");
+                    var argsOneDragonConfig = ConfigList.FirstOrDefault(x =>
+                        string.Equals(x.Name, cmdOptions.OneDragonConfigName, StringComparison.Ordinal));
+                    if (argsOneDragonConfig != null)
+                    {
+                        // 设定配置，配置下拉框会选定。
+                        SelectedConfig = argsOneDragonConfig;
+                        // 调用选定更新函数。
+                        OnConfigDropDownChanged();
+                    }
+                    else
+                    {
+                        _logger.LogWarning("未找到，请检查。");
+                    }
                 }
-                else
-                {
-                    _logger.LogWarning("未找到，请检查。");
-                }
-            }
-            // 异步执行一条龙
-            Toast.Information($"命令行一条龙「{SelectedConfig.Name}」。");
-            OnOneKeyExecute();
+                // 异步执行一条龙
+                Toast.Information($"命令行一条龙「{SelectedConfig?.Name}」。");
+                return await RunOneDragonAsync(isCommandLine);
+            }, ShutdownCommandLine, LogCommandLineFailure);
         }
     }
 
     [RelayCommand]
-    public async Task OnOneKeyExecute()
+    public Task OnOneKeyExecute() => OneDragonExecution.RunAsync(false, RunOneDragonAsync,
+        ShutdownCommandLine, LogCommandLineFailure);
+
+    private void ShutdownCommandLine(int exitCode)
     {
+        _logger.LogInformation("Command-line OneDragon execution finished with exit code {ExitCode}", exitCode);
+        Application.Current.Dispatcher.Invoke(() => Application.Current.Shutdown(exitCode));
+    }
+
+    private void LogCommandLineFailure(Exception exception)
+    {
+        _logger.LogError(exception, "Command-line OneDragon execution failed");
+    }
+
+    private async Task<int> RunOneDragonAsync(bool isCommandLine)
+    {
+        if (SelectedConfig == null)
+        {
+            Toast.Warning("请先选择任务");
+            _logger.LogInformation("没有配置,退出执行!");
+            return 1;
+        }
+
         _logger.LogInformation($"启用一条龙配置：{SelectedConfig.Name}");
 
         // 启动等待之前先进行取消操作的初始化，便于在任务开始前终止任务.
@@ -612,11 +637,11 @@ public partial class OneDragonFlowViewModel : ViewModel
             ScriptGroups.Remove(task);
         }
 
-        if (SelectedConfig == null || taskListCopy.Count(t => t.IsEnabled) == 0)
+        if (taskListCopy.Count(t => t.IsEnabled) == 0)
         {
             Toast.Warning("请先选择任务");
             _logger.LogInformation("没有配置,退出执行!");
-            return;
+            return 1;
         }
 
         int enabledoneTaskCount = taskListCopy.Count(t => t.IsEnabled);
@@ -626,7 +651,7 @@ public partial class OneDragonFlowViewModel : ViewModel
         if (CancellationContext.Instance.IsCancellationRequested)
         {
             _logger.LogInformation("一条龙在启动阶段被取消");
-            return;
+            return 1;
         }
 
         SaveConfig();
@@ -660,7 +685,7 @@ public partial class OneDragonFlowViewModel : ViewModel
                         if (enabledTaskCount <= 0)
                         {
                             _logger.LogInformation("没有配置组任务,退出执行!");
-                            return;
+                            return 1;
                         }
 
                         Notify.Event(NotificationEvent.DragonStart).Success("配置组任务启动");
@@ -690,7 +715,7 @@ public partial class OneDragonFlowViewModel : ViewModel
                     {
                         Notify.Event(NotificationEvent.DragonEnd).Success("一条龙和配置组任务结束");
                     }
-                    return; // 后续的检查任务也不执行
+                    return 1; // 后续的检查任务也不执行
                 }
             }
         }
@@ -715,11 +740,13 @@ public partial class OneDragonFlowViewModel : ViewModel
                         SystemControl.CloseGame();
                         break;
                     case "关闭软件":
-                        Application.Current.Dispatcher.Invoke(() => { Application.Current.Shutdown(); });
+                        if (!isCommandLine)
+                            Application.Current.Dispatcher.Invoke(() => { Application.Current.Shutdown(); });
                         break;
                     case "关闭游戏和软件":
                         SystemControl.CloseGame();
-                        Application.Current.Dispatcher.Invoke(() => { Application.Current.Shutdown(); });
+                        if (!isCommandLine)
+                            Application.Current.Dispatcher.Invoke(() => { Application.Current.Shutdown(); });
                         break;
                     case "关机":
                         SystemControl.CloseGame();
@@ -728,6 +755,7 @@ public partial class OneDragonFlowViewModel : ViewModel
                 }
             }
         });
+        return 0;
     }
 
     /// <summary>
