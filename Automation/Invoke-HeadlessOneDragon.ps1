@@ -51,6 +51,15 @@ $ownsMutex = $false
 $exitCode = 1
 $boot = 0L
 $parentSession = [Diagnostics.Process]::GetCurrentProcess().SessionId
+$script:pendingTaskIds = $null
+$originalTaskIds = @($profile.TaskOrder | Where-Object { $profile.TaskEnabledList.$_ -eq $true })
+if ($profile.NextTaskId -and $profile.TaskOrder -contains $profile.NextTaskId) {
+    $nextIndex = [array]::IndexOf(@($profile.TaskOrder), $profile.NextTaskId)
+    $originalTaskIds = @($profile.TaskOrder | Select-Object -Skip $nextIndex | Where-Object { $profile.TaskEnabledList.$_ -eq $true })
+}
+$status['TaskIds'] = $originalTaskIds
+$status['SelectiveRecovery'] = $false
+
 
 function Write-RunLog([string]$message) {
     $line = '[{0}] {1}' -f (Get-Date -Format 'yyyy-MM-dd HH:mm:ss'), $message
@@ -72,13 +81,38 @@ function Invoke-OneDragonAttempt([int]$Number) {
         Number = $Number; Started = (Get-Date).ToString('o'); Updated = $null
         ChildSession = $null; BetterGiPid = $null; ExitCode = 1; ProcessExitCode = $null; Result = 'running'
         Detail = ''; CleanupSucceeded = $false; Retryable = $true
+        TaskIds = $originalTaskIds; Profile = $ProfileName; BusinessOutcome = 'unknown'
+        CompletedTaskIds = @(); RetryTaskIds = @(); RecoveryRequired = $false
     }
     $status.Attempts += $attempt
     $status.AttemptCount = $Number
     $status.ChildSession = $null; $status.BetterGiPid = $null; $status.ProcessExitCode = $null
     $status.Phase = 'starting attempt'; $status.Result = 'running'; $status.Detail = ''
     $desktopHost = $null; $hostProcess = $null; $taskName = $null
+    $temporaryProfilePath = $null
+    $snapshotPath = Join-Path $attemptDirectory 'profile.json'
     try {
+        $attemptProfile = $profile | ConvertTo-Json -Depth 16 | ConvertFrom-Json
+        if ($null -ne $script:pendingTaskIds) {
+            if (@($script:pendingTaskIds).Count -eq 0 -or
+                @($script:pendingTaskIds | Where-Object { $originalTaskIds -notcontains $_ }).Count -gt 0) {
+                $attempt.Retryable = $false
+                throw 'The recovery task selection is empty or not owned by this profile.'
+            }
+            $attempt.Profile = "$ProfileName-Recovery-$runId-a$Number"
+            $attemptProfile.Name = $attempt.Profile
+            $attemptProfile.NextTaskId = ''
+            foreach ($property in $attemptProfile.TaskEnabledList.PSObject.Properties) {
+                $property.Value = [bool]($script:pendingTaskIds -contains $property.Name)
+            }
+            $attempt.TaskIds = @($originalTaskIds | Where-Object { $script:pendingTaskIds -contains $_ })
+            $temporaryProfilePath = Join-Path (Split-Path -Parent $profilePath) ($attempt.Profile + '.json')
+            if (Test-Path -LiteralPath $temporaryProfilePath) { throw 'The recovery profile already exists.' }
+            [IO.File]::WriteAllText($temporaryProfilePath, ($attemptProfile | ConvertTo-Json -Depth 16), [Text.UTF8Encoding]::new($false))
+            $status.SelectiveRecovery = $true
+            Write-RunLog "Attempt $Number will retry only unfinished task IDs: $($attempt.TaskIds -join ', ')."
+        }
+        [IO.File]::WriteAllText($snapshotPath, ($attemptProfile | ConvertTo-Json -Depth 16), [Text.UTF8Encoding]::new($false))
         $existingChild = Get-OneDragonCleanupChildSession
         if ($null -ne $existingChild) {
             $attempt.Retryable = $false
@@ -123,7 +157,7 @@ function Invoke-OneDragonAttempt([int]$Number) {
             if ($desktopHost.HasExited) { throw 'The Windows child desktop exited before login completed.' }
         } until ($desktop.State -eq 'ready' -and $desktop.LoginCompleted -and $null -ne $attempt.ChildSession)
 
-        $arguments = 'startOneDragon "{0}"' -f $ProfileName
+        $arguments = 'startOneDragon "{0}"' -f $attempt.Profile
         $rootInstance = Get-Process -Name BetterGI -ErrorAction SilentlyContinue | Where-Object { $_.SessionId -eq $parentSession -and $_.Path -eq $executable }
         if ($rootInstance) { $arguments += ' --instance childSession' }
         $taskName = 'BetterGI-OneDragon-' + [guid]::NewGuid().ToString('N')
@@ -163,6 +197,45 @@ function Invoke-OneDragonAttempt([int]$Number) {
             $attempt.Detail = ($attempt.Detail + ' Cleanup not confirmed: ' + $cleanup.Detail).Trim()
         }
         $attempt.Updated = (Get-Date).ToString('o')
+        if ($attempt.BetterGiPid -and $attempt.ChildSession -and (Test-Path -LiteralPath $snapshotPath)) {
+            try {
+                $attemptEvaluationStatusPath = Join-Path $attemptDirectory 'evaluation-status.json'
+                $evaluationStatus = [ordered]@{
+                    RunId = $runId; Phase = 'finished'; Started = $attempt.Started; Updated = $attempt.Updated
+                    BetterGiPid = $attempt.BetterGiPid; ChildSession = $attempt.ChildSession
+                    Result = $attempt.Result; ExitCode = $attempt.ExitCode; ProcessExitCode = $attempt.ProcessExitCode
+                }
+                [IO.File]::WriteAllText($attemptEvaluationStatusPath, ($evaluationStatus | ConvertTo-Json -Depth 8), [Text.UTF8Encoding]::new($false))
+                $attemptJson = & 'C:\Python314\python.exe' (Join-Path $PSScriptRoot 'evaluate_bettergi_result.py') --run-dir $runDirectory --status-file $attemptEvaluationStatusPath --profile $snapshotPath
+                if ($LASTEXITCODE -ne 0) { throw "Attempt evaluator exited with code $LASTEXITCODE." }
+                $attemptEvaluation = $attemptJson | ConvertFrom-Json
+                if ($null -eq $attemptEvaluation.ExitCode -or $null -eq $attemptEvaluation.RecoverySafe) {
+                    throw 'The attempt evaluator returned an invalid recovery plan.'
+                }
+                [IO.File]::WriteAllText((Join-Path $attemptDirectory 'evaluation.json'), $attemptJson, [Text.UTF8Encoding]::new($false))
+                $attempt.BusinessOutcome = $attemptEvaluation.BusinessOutcome
+                $attempt.CompletedTaskIds = @($attemptEvaluation.CompletedTaskIds | Where-Object { $_ })
+                $attempt.RetryTaskIds = @($attemptEvaluation.RetryTaskIds | Where-Object { $_ })
+                $attempt.RecoveryRequired = [bool]$attemptEvaluation.RecoveryRequired
+                if ($attempt.ExitCode -eq 0) {
+                    $attempt.ExitCode = [int]$attemptEvaluation.ExitCode
+                    $attempt.Retryable = $attempt.RecoveryRequired -and $attemptEvaluation.RecoverySafe
+                }
+                if ($attemptEvaluation.RecoverySafe -and $attempt.RetryTaskIds.Count -gt 0) {
+                    $script:pendingTaskIds = $attempt.RetryTaskIds
+                }
+                if ($attempt.RecoveryRequired) {
+                    $attempt.Detail = 'Teleport recovery required for unfinished profile tasks.'
+                }
+            } catch {
+                $attempt.Retryable = $false
+                $attempt.Detail = ($attempt.Detail + ' Recovery evaluation failed: ' + $_.Exception.Message).Trim()
+                if ($attempt.ExitCode -eq 0) { $attempt.ExitCode = 3; $attempt.Result = 'failed' }
+            }
+        }
+        if ($temporaryProfilePath -and $attempt.CleanupSucceeded) {
+            Remove-Item -LiteralPath $temporaryProfilePath -Force
+        }
         $status.Result = $attempt.Result; $status.ExitCode = $attempt.ExitCode; $status.Detail = $attempt.Detail
         $status.ProcessExitCode = $attempt.ProcessExitCode
         [IO.File]::WriteAllText((Join-Path $attemptDirectory 'status.json'), ($attempt | ConvertTo-Json), [Text.UTF8Encoding]::new($false))

@@ -6,8 +6,8 @@ Its only workflow is:
 1. Open a background Windows child session.
 2. Start `BetterGI.exe startOneDragon "Headless-Daily"` inside that session.
 3. Wait for BetterGI to exit, then close the owned child session.
-4. If that attempt failed and cleanup is confirmed, repeat once with a fresh child session.
-5. Evaluate the final attempt's game logs, then build one report and send it through the configured Feishu app bot.
+4. Evaluate each attempt after cleanup. A teleport recognition failure allows one fresh child session that retries only unfinished tasks.
+5. Combine completed task evidence across selective attempts, then build one report and send it through the configured Feishu app bot.
 6. Shut down only when the gateway's WOL record belongs to this Windows boot.
 
 BetterGI itself launches Genshin, enters the game, and executes the selected
@@ -30,7 +30,7 @@ after that workflow returns. Startup cancellation, explicit task cancellation, a
 empty configuration, and unhandled orchestration exceptions exit with code 1.
 Manual GUI execution keeps its existing completion behavior. Ordinary gameplay
 errors logged by the task runner still finish the process normally and are evaluated
-through `BusinessOutcome` after cleanup.
+through `BusinessOutcome` after each cleanup.
 
 ## One recovery attempt
 
@@ -42,14 +42,27 @@ gone. If cleanup cannot be confirmed or another child session is present, it
 stops instead of starting a second instance. It never closes applications in the
 parent session, including manually opened BetterGI or Genshin.
 
-There are at most two attempts in one scheduled run. A successful exit, gameplay
-warnings, depleted resin, and sold-out items do not trigger a retry. A process that
-remains running is still allowed to continue; no hang deadline has been added.
-Reporting and the existing WOL shutdown decision run only after all attempts end.
-The Windows task's own `RestartCount` stays zero to avoid a second retry mechanism.
-Business evaluation also runs once after final cleanup, so game errors and missing
-evidence do not trigger another attempt. Evaluation failures are recorded as
-`incomplete`; they do not suppress reporting or change the WOL ownership decision.
+There are at most two child-session attempts in one scheduled run. Native teleport
+panel failures first restore the main UI and recompute the map point, with at most
+three teleport attempts within the existing single-teleport timeout. Cancellation
+and failure to restore the UI stop that local recovery.
+
+After child cleanup, the evaluator checks native task IDs against a snapshot of
+the selected profile. A recognized teleport failure marks failed or unfinished
+tasks for recovery. The runner creates an invocation-scoped profile with completed
+tasks disabled; it does not modify the original profile. The temporary profile is
+removed after verified cleanup. The attempt retains process exit, business outcome,
+completed task IDs and pending task IDs separately. Legacy logs can be mapped only
+when task names, order and totals agree with the profile; ambiguous identities
+block selective recovery.
+
+Warnings, depleted resin, sold-out items and unrelated game errors do not request
+another child session. A process that remains running is still allowed to continue;
+no hang deadline has been added. Lifecycle/crash recovery retains its existing
+single retry, and uses an unfinished-task selection when evidence permits it.
+The Windows task's own `RestartCount` stays zero. Reporting and WOL shutdown happen
+once after the final evaluation. The report preserves earlier completed steps and
+replaces only the results of tasks that were retried; resin rewards are counted once.
 
 ## Entry points
 
@@ -97,7 +110,8 @@ Run `tests\Test-DesktopSession.ps1`, `tests\Test-GatewayPolicy.ps1`, and
 `tests\Test-OneDragonRunner.ps1` executes the real orchestration in isolated
 fixtures with Windows, notification, and shutdown boundaries mocked. It checks
 crash-then-success, two failures, blocked cleanup, final business-result mapping,
-evaluator failure, publication suppression, and one final report/shutdown.
+evaluator failure, publication suppression, selective teleport recovery, repeated
+teleport failure, and one final report/shutdown.
 Run `python -m unittest discover -s tests -p 'test_*.py'` for retry report coverage
 and synthetic game-result regression fixtures. The result evaluator reuses the
 reporter's native log selection and the same deterministic summary parser.
@@ -123,7 +137,8 @@ The native message idempotency key is stable per run and message part.
 
 The reporter reads only this run's status, time window, PID, and child session.
 For a recovered run, it lists both attempts and preserves both sets of attributed
-logs, while evaluating gameplay results only from the final attempt.
+logs, while combining completed task evidence for selective recovery. Ordinary full-run
+crash retries retain final-attempt result selection.
 Its exit code never replaces the game's original result. Report errors are stored
 locally and do not prevent the existing WOL ownership policy from running.
 There is no additional scheduled trigger or background server. Recovery runs

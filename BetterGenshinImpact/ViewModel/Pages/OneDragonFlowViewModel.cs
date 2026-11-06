@@ -669,9 +669,10 @@ public partial class OneDragonFlowViewModel : ViewModel
         {
             if (task is { IsEnabled: true, Action: not null })
             {
+                _logger.LogInformation($"一条龙任务执行: {finishOneTaskcount++}/{enabledoneTaskCount}");
+                _logger.LogInformation("OneDragon task identity: {TaskId} / {TaskName}", task.Id, task.Name);
                 if (ScriptGroupsdefault.Any(defaultSg => defaultSg.Name == task.Name))
                 {
-                    _logger.LogInformation($"一条龙任务执行: {finishOneTaskcount++}/{enabledoneTaskCount}");
                     await new TaskRunner().RunThreadAsync(async () =>
                     {
                         await task.Action();
@@ -703,10 +704,12 @@ public partial class OneDragonFlowViewModel : ViewModel
                     }
                     catch (Exception e)
                     {
-                        _logger.LogDebug(e, "执行配置组任务时失败");
+                        _logger.LogError(e, "OneDragon script group failed: {TaskId}", task.Id);
                         Toast.Error("执行配置组任务时失败");
                     }
                 }
+                if (!CancellationContext.Instance.Cts.IsCancellationRequested)
+                    _logger.LogInformation("OneDragon task finished: {TaskId}", task.Id);
                 // 如果任务已经被取消，中断所有任务
                 if (CancellationContext.Instance.Cts.IsCancellationRequested)
                 {

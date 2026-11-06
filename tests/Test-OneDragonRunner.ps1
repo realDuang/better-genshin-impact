@@ -1,7 +1,7 @@
 ﻿param(
     [string]$SourceDirectory = (Join-Path $PSScriptRoot '..\Automation'),
     [string]$FixturePath,
-    [ValidateSet('success', 'retry-success', 'retry-failure', 'cleanup-failure', 'preexisting-child', 'manual-success', 'business-failure', 'evidence-incomplete', 'evaluation-failure', 'no-publish')]
+    [ValidateSet('success', 'retry-success', 'retry-failure', 'cleanup-failure', 'preexisting-child', 'manual-success', 'business-failure', 'evidence-incomplete', 'evaluation-failure', 'no-publish', 'teleport-recovery', 'teleport-exhausted')]
     [string]$Scenario = 'success'
 )
 $ErrorActionPreference = 'Stop'
@@ -140,6 +140,8 @@ public sealed class RunnerTestScheduler {
         'retry-success' { @(-1073741819, 0) }
         'retry-failure' { @(-1073741819, -1073741819) }
         'cleanup-failure' { @(-1073741819) }
+        'teleport-recovery' { @(0, 0) }
+        'teleport-exhausted' { @(0, 0) }
         default { @(0) }
     }
     if ($Scenario -eq 'preexisting-child') {
@@ -229,7 +231,16 @@ public sealed class RunnerTestScheduler {
         if ($TaskPath -ne '\BetterGI\' -or $TaskName -notmatch '^BetterGI-OneDragon-[0-9a-f]{32}$' -or $Action.Execute -ne [RunnerTestEnvironment]::Executable) {
             throw 'Unexpected task registration.'
         }
-        if ($Action.Argument -ne 'startOneDragon "Fixture" --instance childSession') { throw 'The OneDragon command changed.' }
+        $selectedName = if ([RunnerTestEnvironment]::StartCount -eq 2 -and $Scenario -like 'teleport-*') {
+            (Get-Content -LiteralPath (Join-Path ([RunnerTestEnvironment]::AttemptDirectory) 'profile.json') -Raw -Encoding UTF8 | ConvertFrom-Json).Name
+        } else { 'Fixture' }
+        if ($Action.Argument -ne ('startOneDragon "{0}" --instance childSession' -f $selectedName)) { throw 'The OneDragon command changed.' }
+        if ($Scenario -like 'teleport-*' -and [RunnerTestEnvironment]::StartCount -eq 2) {
+            $retryProfile = Get-Content -LiteralPath (Join-Path $fixtureRoot ('User\OneDragon\' + $selectedName + '.json')) -Raw -Encoding UTF8 | ConvertFrom-Json
+            if ($retryProfile.TaskEnabledList.domain -or -not $retryProfile.TaskEnabledList.guild -or -not $retryProfile.TaskEnabledList.teapot) {
+                throw 'Selective recovery repeated a completed domain or omitted an unfinished reward task.'
+            }
+        }
         [RunnerTestEnvironment]::TaskName = $TaskName
         [RunnerTestEnvironment]::TaskExists = $true
         $task = [RunnerTestTask]::new()
@@ -250,10 +261,11 @@ public sealed class RunnerTestScheduler {
         [RunnerTestEnvironment]::TaskExists = $false
     }
     function Invoke-RunnerTestEvaluation {
-        param($RunDirectory)
-        $final = Get-Content -LiteralPath (Join-Path $RunDirectory 'status.json') -Raw | ConvertFrom-Json
+        param($RunDirectory, $StatusFile, $ProfilePath)
+        $inputStatus = if ($StatusFile) { $StatusFile } else { Join-Path $RunDirectory 'status.json' }
+        $final = Get-Content -LiteralPath $inputStatus -Raw -Encoding UTF8 | ConvertFrom-Json
         if ($final.Phase -ne 'finished' -or [RunnerTestEnvironment]::ReportCount -ne 0) {
-            throw 'Business evaluation did not run after all attempts and before publishing.'
+            throw 'Business evaluation did not run after attempt cleanup and before publishing.'
         }
         $count = [RunnerTestEnvironment]::StartCount
         if ($count -gt 0 -and -not [RunnerTestEnvironment]::Events.Contains("host-stop:$count")) {
@@ -274,13 +286,21 @@ public sealed class RunnerTestScheduler {
             if ($outcome -eq 'partial') { $code = 2 }
             elseif ($outcome -eq 'incomplete') { $code = 3 }
         }
-        @{ProcessExitCode=$final.ProcessExitCode; ExitCode=$code; BusinessOutcome=$outcome; BusinessEvidenceIssues=@()} |
+        $recovery = $StatusFile -and $Scenario -like 'teleport-*' -and
+            ([RunnerTestEnvironment]::StartCount -eq 1 -or $Scenario -eq 'teleport-exhausted')
+        if ($recovery) { $code = 2; $outcome = 'partial' }
+        if (-not $StatusFile -and $Scenario -eq 'teleport-exhausted') { $code = 2; $outcome = 'partial' }
+        $pendingTaskIds = @()
+        if ($Scenario -like 'teleport-*') { $pendingTaskIds = @('guild', 'teapot') }
+        @{ProcessExitCode=$final.ProcessExitCode; ExitCode=$code; BusinessOutcome=$outcome; BusinessEvidenceIssues=@()
+          RecoverySafe=$true; RecoveryRequired=[bool]$recovery
+          CompletedTaskIds=@('domain'); RetryTaskIds=$pendingTaskIds} |
             ConvertTo-Json -Compress
     }
     function Invoke-RunnerTestReport {
         param($RunDirectory)
-        $final = Get-Content -LiteralPath (Join-Path $RunDirectory 'status.json') -Raw | ConvertFrom-Json
-        if ($final.Phase -ne 'finished' -or [RunnerTestEnvironment]::EvaluationCount -ne 1 -or $final.BusinessOutcome -eq 'unknown') { throw 'Reporting ran before the final business outcome was saved.' }
+        $final = Get-Content -LiteralPath (Join-Path $RunDirectory 'status.json') -Raw -Encoding UTF8 | ConvertFrom-Json
+        if ($final.Phase -ne 'finished' -or [RunnerTestEnvironment]::EvaluationCount -lt 1 -or $final.BusinessOutcome -eq 'unknown') { throw 'Reporting ran before the final business outcome was saved.' }
         [RunnerTestEnvironment]::ReportCount++
         [RunnerTestEnvironment]::Events.Add("report:$($final.AttemptCount)")
         $global:LASTEXITCODE = 0
@@ -326,7 +346,7 @@ $testRoot = Join-Path ([IO.Path]::GetTempPath()) ('bettergi-runner-test-' + [gui
 $null = New-Item -ItemType Directory -Path $testRoot
 $utf8 = [Text.UTF8Encoding]::new($true)
 try {
-    foreach ($case in @('success', 'retry-success', 'retry-failure', 'cleanup-failure', 'preexisting-child', 'manual-success', 'business-failure', 'evidence-incomplete', 'evaluation-failure', 'no-publish')) {
+    foreach ($case in @('success', 'retry-success', 'retry-failure', 'cleanup-failure', 'preexisting-child', 'manual-success', 'business-failure', 'evidence-incomplete', 'evaluation-failure', 'no-publish', 'teleport-recovery', 'teleport-exhausted')) {
         $fixture = Join-Path $testRoot $case
         foreach ($relative in @('Automation', 'User\OneDragon', 'state', 'log')) {
             $null = New-Item -ItemType Directory -Path (Join-Path $fixture $relative) -Force
@@ -336,12 +356,21 @@ try {
         }
         foreach ($relative in @('BetterGI.exe', 'Automation\HeadlessLauncher.exe')) { [IO.File]::WriteAllText((Join-Path $fixture $relative), '') }
         $completion = -join (@(0x5173,0x95ED,0x6E38,0x620F,0x548C,0x8F6F,0x4EF6) | ForEach-Object { [char]$_ })
-        @{Name='Fixture'; CompletionAction=$completion} | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $fixture 'User\OneDragon\Fixture.json') -Encoding UTF8
+        $profileFixture = @{Name='Fixture'; CompletionAction=$completion}
+        if ($case -like 'teleport-*') {
+            $profileFixture.TaskOrder = @('domain', 'guild', 'teapot')
+            $profileFixture.TaskEnabledList = @{domain=$true; guild=$true; teapot=$true}
+            $profileFixture.TaskDefinitions = @{domain='Domain'; guild='Guild'; teapot='Teapot'}
+            $profileFixture.NextTaskId = ''
+        }
+        $profileFixture | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $fixture 'User\OneDragon\Fixture.json') -Encoding UTF8
         @{genshinStartConfig=@{linkedStartEnabled=$true}} | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $fixture 'User\config.json') -Encoding UTF8
         $text = Get-Content -LiteralPath (Join-Path $sourceRoot 'Invoke-HeadlessOneDragon.ps1') -Raw -Encoding UTF8
         $text = Replace-RunnerBoundary $text "`$stateDirectory = 'C:\ProgramData\BetterGI-Automation'" ("`$stateDirectory = '{0}'" -f (Join-Path $fixture 'state').Replace("'", "''"))
         $text = Replace-RunnerBoundary $text '[Diagnostics.Process]::GetCurrentProcess().SessionId' '[RunnerTestEnvironment]::ParentSession'
         $evaluationCall = "& 'C:\Python314\python.exe' (Join-Path `$PSScriptRoot 'evaluate_bettergi_result.py') --run-dir `$runDirectory"
+        $attemptEvaluationCall = "& 'C:\Python314\python.exe' (Join-Path `$PSScriptRoot 'evaluate_bettergi_result.py') --run-dir `$runDirectory --status-file `$attemptEvaluationStatusPath --profile `$snapshotPath"
+        $text = Replace-RunnerBoundary $text $attemptEvaluationCall 'Invoke-RunnerTestEvaluation -RunDirectory $runDirectory -StatusFile $attemptEvaluationStatusPath -ProfilePath $snapshotPath'
         $text = Replace-RunnerBoundary $text $evaluationCall 'Invoke-RunnerTestEvaluation -RunDirectory $runDirectory'
         $reportCall = "& 'C:\Python314\python.exe' (Join-Path `$PSScriptRoot 'publish_bettergi_report.py') --run-dir `$runDirectory --config (Join-Path `$stateDirectory 'reporting.json')"
         $text = Replace-RunnerBoundary $text $reportCall 'Invoke-RunnerTestReport -RunDirectory $runDirectory'
@@ -351,15 +380,15 @@ try {
         $actualExit = $LASTEXITCODE
         $mockPath = Join-Path $fixture 'mock-state.json'
         Assert-RunnerCase (Test-Path -LiteralPath $mockPath) "$case did not produce mock evidence: $output"
-        $mock = Get-Content -LiteralPath $mockPath -Raw | ConvertFrom-Json
-        $final = Get-Content -LiteralPath (Join-Path $fixture 'state\latest-run.json') -Raw | ConvertFrom-Json
-        $expectedStarts = if ($case -eq 'preexisting-child') { 0 } elseif ($case -like 'retry-*') { 2 } else { 1 }
+        $mock = Get-Content -LiteralPath $mockPath -Raw -Encoding UTF8 | ConvertFrom-Json
+        $final = Get-Content -LiteralPath (Join-Path $fixture 'state\latest-run.json') -Raw -Encoding UTF8 | ConvertFrom-Json
+        $expectedStarts = if ($case -eq 'preexisting-child') { 0 } elseif ($case -like 'retry-*' -or $case -like 'teleport-*') { 2 } else { 1 }
         $expectedAttempts = [Math]::Max(1, $expectedStarts)
-        $shouldSucceed = $case -in @('success', 'retry-success', 'manual-success', 'no-publish')
+        $shouldSucceed = $case -in @('success', 'retry-success', 'manual-success', 'no-publish', 'teleport-recovery')
         Assert-RunnerCase (($actualExit -eq 0) -eq $shouldSucceed) "$case exit=$actualExit; output=$output"
         Assert-RunnerCase ($mock.StartCount -eq $expectedStarts -and $mock.RunCount -eq $expectedStarts) "$case launch count"
         Assert-RunnerCase ($final.AttemptCount -eq $expectedAttempts -and @($final.Attempts).Count -eq $expectedAttempts) "$case final attempt count"
-        Assert-RunnerCase ($mock.EvaluationCount -eq 1) "$case must evaluate exactly once"
+        Assert-RunnerCase ($mock.EvaluationCount -eq (1 + $expectedStarts)) "$case must evaluate each attempt and once before publication"
         $expectedReports = if ($case -eq 'no-publish') { 0 } else { 1 }
         Assert-RunnerCase ($mock.ReportCount -eq $expectedReports) "$case report count"
         if ($case -in @('business-failure', 'evidence-incomplete', 'evaluation-failure')) {
@@ -367,7 +396,7 @@ try {
             $expectedOutcome = if ($case -eq 'business-failure') { 'partial' } else { 'incomplete' }
             Assert-RunnerCase ($actualExit -eq $expectedCode -and $final.ExitCode -eq $expectedCode) "$case scheduled result"
             Assert-RunnerCase ($final.BusinessOutcome -eq $expectedOutcome -and $final.ProcessExitCode -eq 0) "$case process and business results"
-            Assert-RunnerCase ($final.Attempts[0].ExitCode -eq 0 -and $final.Attempts[0].ProcessExitCode -eq 0) "$case must not rewrite process history or retry"
+            Assert-RunnerCase ($final.Attempts[0].ProcessExitCode -eq 0 -and -not $final.Attempts[0].Retryable) "$case must not rewrite process history or retry"
         }
         $expectedShutdown = if ($case -in @('manual-success', 'preexisting-child', 'no-publish')) { 0 } else { 1 }
         Assert-RunnerCase ($mock.ShutdownCount -eq $expectedShutdown) "$case shutdown count"
@@ -378,7 +407,12 @@ try {
         if ($expectedStarts -eq 2) {
             Assert-RunnerCase ($mock.Events.IndexOf('host-stop:1') -lt $mock.Events.IndexOf('host-start:2')) "$case retried before cleanup"
             Assert-RunnerCase ($mock.Events.IndexOf('report:2') -gt $mock.Events.IndexOf('host-stop:2')) "$case reported before final cleanup"
-            Assert-RunnerCase ($final.Attempts[0].ExitCode -eq -1073741819 -and $final.Attempts[0].CleanupSucceeded) "$case preserves first crash evidence"
+            $firstCode = if ($case -like 'teleport-*') { 2 } else { -1073741819 }
+            Assert-RunnerCase ($final.Attempts[0].ExitCode -eq $firstCode -and $final.Attempts[0].CleanupSucceeded) "$case preserves first failure evidence"
+            if ($case -like 'teleport-*') {
+                Assert-RunnerCase ($final.SelectiveRecovery -and @($final.Attempts[1].TaskIds).Count -eq 2 -and $final.Attempts[1].TaskIds -notcontains 'domain') "$case only retries unfinished tasks"
+                Assert-RunnerCase (@(Get-ChildItem -LiteralPath (Join-Path $fixture 'User\OneDragon') -Filter '*Recovery*.json').Count -eq 0) "$case removes its temporary profile"
+            }
         }
         if ($case -eq 'cleanup-failure') {
             Assert-RunnerCase (-not $final.Attempts[0].CleanupSucceeded -and -not $final.Attempts[0].Retryable) 'Unverified cleanup must block retry'

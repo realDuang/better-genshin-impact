@@ -203,7 +203,7 @@ def extract_run_log(status: dict, logs: list[tuple[str, str]]) -> str:
     return ''.join(record['raw'] for record in sorted(selected.values(), key=lambda item: (item['time'], item['order'])))
 
 
-def summarize(status: dict, logs: list[tuple[str, str]]) -> dict:
+def _summarize_single(status: dict, logs: list[tuple[str, str]]) -> dict:
     """Return complete compact evidence for one exact run; never claim success."""
     result = str(status.get('Result') or '').lower()
     summary = {
@@ -279,8 +279,21 @@ def summarize(status: dict, logs: list[tuple[str, str]]) -> dict:
         elif level in WARNING_LEVELS:
             _add(target[warning_key], _compact_warning(body))
         if current is not None and not is_reward:
+            if logger == 'OneDragonFlowViewModel' and (identity := re.fullmatch(
+                    r'OneDragon task identity: "([^"]+)" / "(.+)"', body)):
+                current['task_id'], current['task_definition'] = identity.groups()
+                if current['name'].startswith('步骤 '):
+                    current['name'] = current['task_definition']
+            if logger == 'OneDragonFlowViewModel' and (finished := re.fullmatch(
+                    r'OneDragon task finished: "([^"]+)"', body)):
+                if current.get('task_id') == finished[1]:
+                    current['ended'] = True
+                    if current['state'] == 'incomplete':
+                        current['state'] = 'ended'
+                    current = None
+                    continue
             for cue, name in NAME_CUES:
-                if cue in body and current['name'].startswith('步骤 '):
+                if cue in body and (current['name'].startswith('步骤 ') or current['name'] == current.get('task_definition')):
                     current['name'] = name
                     break
             _record_step_facts(current, body, level, logger)
@@ -297,7 +310,7 @@ def summarize(status: dict, logs: list[tuple[str, str]]) -> dict:
                     if warning['text'] == '树脂不足':
                         # Only warnings preceding this normal stop are covered.
                         warning['expected_count'] = warning['count']
-            if logger == 'TaskRunner' and STAGE_END.fullmatch(body):
+            if logger == 'TaskRunner' and STAGE_END.fullmatch(body) and not current.get('task_id'):
                 current['ended'] = True
                 if current['state'] == 'incomplete':
                     current['state'] = 'skipped' if any(note['text'] == '无需合成浓缩树脂' for note in current['notes']) else 'ended'
@@ -360,6 +373,50 @@ def summarize(status: dict, logs: list[tuple[str, str]]) -> dict:
     elif issues or has_warnings or unclear_notes or summary['reward']['state'] == 'unclaimed' or status.get('AttentionRequired'):
         summary['outcome'] = 'needs-attention'
     elif steps and summary['flow_ended']:
+        summary['outcome'] = 'finished'
+    return summary
+
+
+def summarize(status: dict, logs: list[tuple[str, str]]) -> dict:
+    attempts = _attempts(status)
+    summary = _summarize_single(status, logs)
+    if not status.get('SelectiveRecovery') or len(attempts) < 2:
+        return summary
+    effective = {}
+    issues = summary['evidence_issues']
+    for attempt in attempts:
+        owned = {**status, **attempt, 'Attempts': [], 'AttemptCount': None,
+                 'SelectiveRecovery': False, 'Result': 'exited', 'ExitCode': 0,
+                 'ProcessExitCode': 0, 'BusinessOutcome': None, 'BusinessEvidenceIssues': []}
+        report = _summarize_single(owned, logs)
+        requested = attempt.get('TaskIds') or []
+        for step in report['steps']:
+            index = step['index'] - 1
+            task_id = step.get('task_id')
+            if index >= len(requested) or task_id != requested[index]:
+                issues.append('补跑任务 ID 与原始日志不一致。')
+                continue
+            effective[task_id] = step
+    ordered = status.get('TaskIds') or []
+    summary['steps'] = []
+    for index, task_id in enumerate(ordered, 1):
+        if task_id not in effective:
+            issues.append('缺少任务的执行结果：' + task_id)
+            continue
+        summary['steps'].append({**effective[task_id], 'index': index, 'total': len(ordered)})
+    has_errors = bool(summary['global_errors']) or any(step['errors'] for step in summary['steps'])
+    warnings = bool(summary['global_warnings']) or any(
+        warning['count'] > warning.get('expected_count', 0)
+        for step in summary['steps'] for warning in step['warnings'])
+    if summary['process_exit_code'] not in (0, '0', None) or status.get('Result') == 'failed':
+        summary['outcome'] = 'failed'
+    elif has_errors:
+        summary['outcome'] = 'partial'
+    elif issues:
+        summary['outcome'] = 'incomplete'
+    elif warnings or summary['reward']['state'] == 'unclaimed':
+        summary['outcome'] = 'needs-attention'
+    else:
         summary['outcome'] = 'finished'
     return summary
 

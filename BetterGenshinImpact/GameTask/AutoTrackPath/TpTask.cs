@@ -1241,44 +1241,34 @@ public class TpTask
 
     private async Task<(double, double)> TpWithRetries(double tpX, double tpY, string mapName, bool force)
     {
-        for (var i = 0; i < 3; i++)
+        try
         {
-            try
-            {
-                return await TpOnce(tpX, tpY, mapName, force);
-            }
-            catch (TeleportPanelNotOpenedException e)
-            {
-                // 同一视野内点击后未出现面板，重试只会重复点击同一位置。
-                
-                // 抛出异常按下 ESC 退出大地图，避免影响后续路径追踪任务
-                Simulation.SendInput.Keyboard.KeyPress(User32.VK.VK_ESCAPE);
-                await Delay(300, ct);
-                
-                throw;
-            }
-            catch (TpPointNotActivate e)
-            {
-                // 未激活点位的详情面板会遮挡后续地图操作，重试前先关闭。
-                // 最后一次失败也需要执行清理，避免影响脚本组中的下一个任务。
-                Simulation.SendInput.Keyboard.KeyPress(User32.VK.VK_ESCAPE);
-                await Delay(300, ct);
-                // throw; // 不抛出异常，继续重试
-                Logger.LogWarning(e.Message + "  重试");
-            }
-            catch (Exception e) when (IsTaskStopException(e))
-            {
-                throw;
-            }
-            catch (Exception e)
-            {
-                Logger.LogDebug(e, e.Message);
-                Logger.LogWarning("传送异常" + e.Message);
-                await Delay(300, ct);
-            }
+            return await TeleportRetry.RunAsync(
+                () => TpOnce(tpX, tpY, mapName, force),
+                exception => !IsTaskStopException(exception),
+                async (exception, attempt) =>
+                {
+                    Logger.LogInformation(exception, "Teleport attempt {Attempt}/3 failed; restoring the map before retry: {Reason}",
+                        attempt, exception.Message);
+                    if (exception is TpPointNotActivate)
+                    {
+                        // Reopen from the main UI so the next attempt recomputes the point and view.
+                        await new ReturnMainUiTask().Start(ct);
+                        ClearRememberedAreaSwitchCenterPoint();
+                    }
+                    else
+                    {
+                        await Delay(300, ct);
+                    }
+                });
         }
-
-        throw new InvalidOperationException("传送失败");
+        catch (TpPointNotActivate)
+        {
+            // Close the terminal failure panel before the next OneDragon task starts.
+            Simulation.SendInput.Keyboard.KeyPress(User32.VK.VK_ESCAPE);
+            await Delay(300, ct);
+            throw;
+        }
     }
 
     /// <summary>
